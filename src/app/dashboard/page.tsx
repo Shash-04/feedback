@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { Search, Filter, Users, Building, MessageSquare, Calendar, Star, TrendingUp, Eye, MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
 
 interface PlacementFeedback {
     id: string;
@@ -380,118 +381,146 @@ const Dashboard = () => {
     const stats = getStats();
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
-            {/* Header */}
-            <div className="bg-gray-800 border-b border-gray-700 px-6 py-4">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl font-bold text-white">Placement Dashboard</h1>
-                        <p className="text-gray-400">Track and analyze placement feedback</p>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                        <div className="relative">
-                            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                            <input
-                                type="text"
-                                placeholder="Search feedback..."
-                                className="bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                        <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors">
-                            <Filter className="w-5 h-5" />
-                        </button>
-                    </div>
-                </div>
-            </div>
+       <div className="min-h-screen bg-gray-900 text-white">
+  {/* Header */}
+  <div className="bg-gray-800 border-b border-gray-700 px-4 py-4">
+    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* Left */}
+      <div>
+        <h1 className="text-2xl font-bold text-white">Placement Dashboard</h1>
+        <p className="text-gray-400">Track and analyze placement feedback</p>
+      </div>
 
-            {/* Stats Cards */}
-            <div className="px-6 py-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-gray-400 text-sm">Placement Feedback</p>
-                                <p className="text-2xl font-bold text-white">{stats.placement.total}</p>
-                                <p className="text-green-400 text-sm">Avg: {stats.placement.avgRating}/5</p>
-                            </div>
-                            <div className="bg-blue-900 p-3 rounded-full">
-                                <Users className="w-8 h-8 text-blue-400" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-gray-400 text-sm">Interview Feedback</p>
-                                <p className="text-2xl font-bold text-white">{stats.interview.total}</p>
-                                <p className="text-green-400 text-sm">Avg: {stats.interview.avgRating}/5</p>
-                            </div>
-                            <div className="bg-green-900 p-3 rounded-full">
-                                <MessageSquare className="w-8 h-8 text-green-400" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-gray-400 text-sm">Company Feedback</p>
-                                <p className="text-2xl font-bold text-white">{stats.company.total}</p>
-                                <p className="text-green-400 text-sm">Avg: {stats.company.avgRating}/5</p>
-                            </div>
-                            <div className="bg-purple-900 p-3 rounded-full">
-                                <Building className="w-8 h-8 text-purple-400" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      {/* Middle Nav Buttons */}
+      <div className="flex flex-wrap gap-2">
+        <Link href="company">
+          <button className="border border-gray-500 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-full backdrop-blur-md hover:bg-white/10 transition duration-300">
+            Company
+          </button>
+        </Link>
+        <Link href="student">
+          <button className="border border-gray-500 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-full backdrop-blur-md hover:bg-white/10 transition duration-300">
+            Student
+          </button>
+        </Link>
+        <Link href="placement">
+          <button className="border border-gray-500 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-full backdrop-blur-md hover:bg-white/10 transition duration-300">
+            Placement
+          </button>
+        </Link>
+      </div>
 
-                {/* Tab Navigation */}
-                <div className="flex space-x-1 mb-6 bg-gray-800 p-1 rounded-lg">
-                    <button
-                        onClick={() => setActiveTab('placement')}
-                        className={`flex-1 py-2 px-4 rounded-md transition-colors ${activeTab === 'placement'
-                                ? 'bg-blue-600 text-white'
-                                : 'text-gray-400 hover:text-white'
-                            }`}
-                    >
-                        Placement Feedback
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('interview')}
-                        className={`flex-1 py-2 px-4 rounded-md transition-colors ${activeTab === 'interview'
-                                ? 'bg-blue-600 text-white'
-                                : 'text-gray-400 hover:text-white'
-                            }`}
-                    >
-                        Interview Feedback
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('company')}
-                        className={`flex-1 py-2 px-4 rounded-md transition-colors ${activeTab === 'company'
-                                ? 'bg-blue-600 text-white'
-                                : 'text-gray-400 hover:text-white'
-                            }`}
-                    >
-                        Company Feedback
-                    </button>
-                </div>
-
-                {/* Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {activeTab === 'placement' && placementData.map((item) => (
-                        <PlacementCard key={item.id} data={item} />
-                    ))}
-                    {activeTab === 'interview' && interviewData.map((item) => (
-                        <InterviewCard key={item.id} data={item} />
-                    ))}
-                    {activeTab === 'company' && companyData.map((item) => (
-                        <CompanyCard key={item.id} data={item} />
-                    ))}
-                </div>
-            </div>
+      {/* Right Search */}
+      <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+        <div className="relative w-full sm:w-auto">
+          <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search feedback..."
+            className="w-full sm:w-64 bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+        <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors w-full sm:w-auto">
+          <Filter className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Stats Cards */}
+  <div className="px-4 py-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+      {/* Placement */}
+      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-400 text-sm">Placement Feedback</p>
+            <p className="text-2xl font-bold text-white">{stats.placement.total}</p>
+            <p className="text-green-400 text-sm">Avg: {stats.placement.avgRating}/5</p>
+          </div>
+          <div className="bg-blue-900 p-3 rounded-full">
+            <Users className="w-8 h-8 text-blue-400" />
+          </div>
+        </div>
+      </div>
+
+      {/* Interview */}
+      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-400 text-sm">Interview Feedback</p>
+            <p className="text-2xl font-bold text-white">{stats.interview.total}</p>
+            <p className="text-green-400 text-sm">Avg: {stats.interview.avgRating}/5</p>
+          </div>
+          <div className="bg-green-900 p-3 rounded-full">
+            <MessageSquare className="w-8 h-8 text-green-400" />
+          </div>
+        </div>
+      </div>
+
+      {/* Company */}
+      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-400 text-sm">Company Feedback</p>
+            <p className="text-2xl font-bold text-white">{stats.company.total}</p>
+            <p className="text-green-400 text-sm">Avg: {stats.company.avgRating}/5</p>
+          </div>
+          <div className="bg-purple-900 p-3 rounded-full">
+            <Building className="w-8 h-8 text-purple-400" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Tab Navigation */}
+    <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 mb-6 bg-gray-800 p-1 rounded-lg">
+      <button
+        onClick={() => setActiveTab('placement')}
+        className={`w-full sm:w-auto py-2 px-4 rounded-md transition-colors ${activeTab === 'placement'
+          ? 'bg-blue-600 text-white'
+          : 'text-gray-400 hover:text-white'
+          }`}
+      >
+        Placement Feedback
+      </button>
+      <button
+        onClick={() => setActiveTab('interview')}
+        className={`w-full sm:w-auto py-2 px-4 rounded-md transition-colors ${activeTab === 'interview'
+          ? 'bg-blue-600 text-white'
+          : 'text-gray-400 hover:text-white'
+          }`}
+      >
+        Interview Feedback
+      </button>
+      <button
+        onClick={() => setActiveTab('company')}
+        className={`w-full sm:w-auto py-2 px-4 rounded-md transition-colors ${activeTab === 'company'
+          ? 'bg-blue-600 text-white'
+          : 'text-gray-400 hover:text-white'
+          }`}
+      >
+        Company Feedback
+      </button>
+    </div>
+
+    {/* Content Cards */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {activeTab === 'placement' && placementData.map((item) => (
+        <PlacementCard key={item.id} data={item} />
+      ))}
+      {activeTab === 'interview' && interviewData.map((item) => (
+        <InterviewCard key={item.id} data={item} />
+      ))}
+      {activeTab === 'company' && companyData.map((item) => (
+        <CompanyCard key={item.id} data={item} />
+      ))}
+    </div>
+  </div>
+</div>
+
     );
 };
 
