@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PlacementFeedback {
+  id                         String   @id @default(uuid())
+  studentName                String
+  studentId                  String
+  department                 String
+  placementCommunication     String
+  trainingRelevance          String
+  mockInterviewsHelpful      String
+  coordinationRating         String
+  suggestions                String
+  wishlistCompanies          String
+  createdAt                  DateTime @default(now())
+}
+
+model InterviewFeedback {
+  id                         String   @id @default(uuid())
+  studentName                String
+  studentId                  String
+  companyName                String
+
+  aptitudeTestRating         String
+  interviewerProfessionalism String
+  questionRelevance          String
+  briefingHelpfulness        String
+  confidenceRating           String
+
+  aptitudeExperience         String
+  interviewQuestionTypes     String
+  toughestPart               String
+  aptitudeImprovementSuggestions String
+  assessmentAccuracy         String
+
+  createdAt                  DateTime @default(now())
+}
+
+model CompanyFeedback {
+  id                   String   @id @default(uuid())
+  studentName          String
+  companyName          String
+
+  technicalSkills      String
+  problemSolving       String
+  communicationSkills  String
+  overallSatisfaction  String
+
+  taskUnderstanding    String
+  adaptability         String
+  additionalComments   String?
+
+  createdAt            DateTime @default(now())
+}
