@@ -38,9 +38,9 @@ export default function Home() {
             Go to Dashboard
           </button>
         </Link>
-        <Link href="/login" className="w-full sm:w-auto">
+        <Link href="/summary" className="w-full sm:w-auto">
           <button className="w-full sm:w-auto border border-purple-500 hover:bg-purple-800 text-white font-medium py-2 px-6 rounded-full transition duration-300">
-            Login
+            Summary
           </button>
         </Link>
       </motion.div>
