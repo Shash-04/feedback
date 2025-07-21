@@ -77,17 +77,19 @@ model FeedbackResponse {
   formId    String
   createdAt DateTime     @default(now())
   answers   Answer[]
-  form      FeedbackForm @relation(fields: [formId], references: [id])
+  form      FeedbackForm @relation(fields: [formId], references: [id], onDelete: Cascade)
 }
+
 
 model Answer {
   id         String           @id @default(uuid())
   responseId String
   questionId String
   answer     String
-  question   FeedbackQuestion @relation(fields: [questionId], references: [id],onDelete: Cascade)
-  response   FeedbackResponse @relation(fields: [responseId], references: [id])
+  question   FeedbackQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  response   FeedbackResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
 }
+
 
 enum QuestionType {
   DESCRIPTIVE

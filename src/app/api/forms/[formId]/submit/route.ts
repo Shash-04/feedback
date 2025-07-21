@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 const prisma = new PrismaClient();
 // Define types for better type safety
@@ -7,13 +7,18 @@ interface Answer {
   questionId: string;
   responseText: string;
 }
-
+type Shashwat = {
+  params: Promise<{ formId: string }>;
+};
 interface RequestBody {
   answers: Answer[];
 }
 
-export async function POST(req: Request, { params }: { params: { formId: string } }) {
-  const { formId } = await params;
+export async function POST(
+  req: NextRequest,
+  { params }: Shashwat
+) {
+  const formId = (await params).formId;
 
   // Validate formId
   if (!formId) {
@@ -62,27 +67,27 @@ export async function POST(req: Request, { params }: { params: { formId: string 
     });
 
     return NextResponse.json(
-      { 
+      {
         success: true,
         message: "Feedback submitted successfully",
-        data: response 
+        data: response
       },
       { status: 201 }
     );
   } catch (err) {
     console.error("Error submitting feedback:", err);
-    
+
     // Handle Prisma errors specifically
     if (err instanceof Error) {
       return NextResponse.json(
-        { 
+        {
           error: "Failed to submit feedback",
-          details: err.message 
+          details: err.message
         },
         { status: 500 }
       );
     }
-    
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

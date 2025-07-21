@@ -1,16 +1,19 @@
 import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 const prisma = new PrismaClient();
 
+type Shashwat = {
+  params: Promise<{ formId: string }>;
+};
 // GET: fetch a single form by ID
 export async function GET(
-  req: Request,
-  { params }: { params: { formId: string } }
+  req: NextRequest,
+  { params }: Shashwat
 ) {
   try {
-    const { formId } = await params;
-    
+    const formId = (await params).formId;
+
     const form = await prisma.feedbackForm.findUnique({
       where: { id: formId },
       include: { questions: true },
@@ -25,15 +28,18 @@ export async function GET(
     console.error("GET form error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
+  finally {
+    await prisma.$disconnect();
+  }
 }
 
 // PUT: update form by ID
 export async function PUT(
-  req: Request,
-  { params }: { params: { formId: string } }
+  req: NextRequest,
+  { params }: Shashwat
 ) {
   try {
-    const { formId } = await params;
+    const formId = (await params).formId;
     const body = await req.json();
     const { title, questions } = body;
 
@@ -58,15 +64,18 @@ export async function PUT(
     console.error("PUT form error:", error);
     return NextResponse.json({ error: "Failed to update form" }, { status: 500 });
   }
+  finally {
+    await prisma.$disconnect();
+  }
 }
 
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { formId: string } }
+  req: NextRequest,
+  { params }: Shashwat
 ) {
   try {
-    const { formId } = await  params;
+    const formId = (await params).formId;
 
     await prisma.feedbackForm.delete({
       where: { id: formId },
