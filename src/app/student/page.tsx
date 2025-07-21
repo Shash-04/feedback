@@ -1,227 +1,169 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { toast, Toaster } from 'sonner';
-import { z } from 'zod';
+import { useEffect, useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import axios from "axios";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
-// ✅ Schema Definition
-const interviewFeedbackSchema = z.object({
-  studentName: z.string().min(1, 'Required'),
-  studentId: z.string().min(1, 'Required - Enter full Enrollment Number'),
-  companyName: z.string().min(1, 'Required'),
+interface FeedbackForm {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+}
 
-  aptitudeTestRating: z.string().min(1, 'Required'),
-  interviewerProfessionalism: z.string().min(1, 'Required'),
-  questionRelevance: z.string().min(1, 'Required'),
-  briefingHelpfulness: z.string().min(1, 'Required'),
-  confidenceRating: z.string().min(1, 'Required'),
+export default function StudentFormsPage() {
+  const [forms, setForms] = useState<FeedbackForm[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  aptitudeExperience: z.string().min(1, 'Required'),
-  interviewQuestionTypes: z.string().min(1, 'Required'),
-  toughestPart: z.string().min(1, 'Required'),
-  aptitudeImprovementSuggestions: z.string().min(1, 'Required'),
-  assessmentAccuracy: z.string().min(1, 'Required'),
-});
-
-type InterviewFormType = z.infer<typeof interviewFeedbackSchema>;
-
-const initialInterviewState: InterviewFormType = {
-  studentName: '',
-  studentId: '',
-  companyName: '',
-
-  aptitudeTestRating: '',
-  interviewerProfessionalism: '',
-  questionRelevance: '',
-  briefingHelpfulness: '',
-  confidenceRating: '',
-
-  aptitudeExperience: '',
-  interviewQuestionTypes: '',
-  toughestPart: '',
-  aptitudeImprovementSuggestions: '',
-  assessmentAccuracy: '',
-};
-
-const interviewFields: {
-  label: string;
-  name: keyof InterviewFormType;
-  type: 'input' | 'select' | 'textarea';
-  options?: string[];
-}[] = [
-  { label: 'Student Name', name: 'studentName', type: 'input' },
-  { label: 'Student ID', name: 'studentId', type: 'input' },
-  { label: 'Company Name (Interviewed With)', name: 'companyName', type: 'input' },
-
-  {
-    label: 'Rate the aptitude test in terms of difficulty and relevance',
-    name: 'aptitudeTestRating',
-    type: 'select',
-    options: ['1', '2', '3', '4', '5'],
-  },
-  {
-    label: 'How professional and respectful was the interviewer?',
-    name: 'interviewerProfessionalism',
-    type: 'select',
-    options: ['1', '2', '3', '4', '5'],
-  },
-  {
-    label: 'How relevant were the interview questions to the job profile?',
-    name: 'questionRelevance',
-    type: 'select',
-    options: ['1', '2', '3', '4', '5'],
-  },
-  {
-    label: 'How helpful was the pre-interview briefing (if any)?',
-    name: 'briefingHelpfulness',
-    type: 'select',
-    options: ['1', '2', '3', '4', '5'],
-  },
-  {
-    label: 'Rate your confidence level during the interview process',
-    name: 'confidenceRating',
-    type: 'select',
-    options: ['1', '2', '3', '4', '5'],
-  },
-
-  {
-    label: 'Describe your overall aptitude test experience',
-    name: 'aptitudeExperience',
-    type: 'textarea',
-  },
-  {
-    label: 'What type of questions were asked in the interview? (technical, HR, behavioral, etc.)',
-    name: 'interviewQuestionTypes',
-    type: 'textarea',
-  },
-  {
-    label: 'What was the most difficult part of the interview process?',
-    name: 'toughestPart',
-    type: 'textarea',
-  },
-  {
-    label: 'What improvements would you suggest for the aptitude or interview process?',
-    name: 'aptitudeImprovementSuggestions',
-    type: 'textarea',
-  },
-  {
-    label: 'Do you feel the assessment accurately reflected your skills? Why or why not?',
-    name: 'assessmentAccuracy',
-    type: 'textarea',
-  },
-];
-
-const InterviewFeedbackForm = () => {
-  const [formData, setFormData] = useState<InterviewFormType>(initialInterviewState);
-  const [errors, setErrors] = useState<Partial<Record<keyof InterviewFormType, string>>>({});
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const parsed = interviewFeedbackSchema.safeParse(formData);
-
-    if (!parsed.success) {
-      const newErrors: Partial<Record<keyof InterviewFormType, string>> = {};
-      parsed.error.issues.forEach((err) => {
-        const field = err.path[0] as keyof InterviewFormType;
-        newErrors[field] = err.message;
-      });
-      setErrors(newErrors);
-      toast.error('Please fill all required fields');
-      return;
-    }
-
-    try {
-      const res = await fetch('/api/student', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(parsed.data),
-      });
-
-      if (!res.ok) throw new Error('Failed to submit');
-
-      toast.success('Interview feedback submitted!');
-      setFormData(initialInterviewState);
-      setErrors({});
-    } catch (err) {
-      console.error(err);
-      toast.error('Something went wrong!');
-    }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name as keyof InterviewFormType]: value,
-    }));
-  };
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        const res = await axios.get("/api/forms");
+        setForms(res.data);
+      } catch (err) {
+        console.error("Failed to fetch forms", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchForms();
+  }, []);
 
   return (
-    <div className="bg-gray-950 text-white min-h-screen py-10 px-4">
-      <Toaster richColors position="top-center" />
-      <div className="max-w-3xl mx-auto bg-gray-900 p-6 rounded-xl shadow border border-gray-800">
-        <h1 className="text-3xl font-bold text-center mb-8">Interview Feedback Form</h1>
+    <div className="min-h-screen bg-gray-950 text-gray-100 px-4 py-10">
+      <div className="max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col items-center mb-12"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-12 w-12 text-blue-400 mb-4"
+          >
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+            <polyline points="14 2 14 8 20 8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+            <path d="M10 9H8" />
+          </svg>
+          <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            Available Feedback Forms
+          </h1>
+          <p className="text-gray-400 mt-2 text-center max-w-lg">
+            Select a form below to provide your valuable feedback
+          </p>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {interviewFields.map(({ label, name, type, options }) => (
-            <div key={name} className="flex flex-col gap-1">
-              <label className="font-medium">{label}</label>
-
-              {type === 'input' && (
-                <input
-                  type="text"
-                  name={name}
-                  value={formData[name]}
-                  onChange={handleChange}
-                  className="bg-gray-800 text-white px-3 py-2 rounded-md border border-gray-700"
-                />
-              )}
-
-              {type === 'select' && (
-                <select
-                  name={name}
-                  value={formData[name]}
-                  onChange={handleChange}
-                  className="bg-gray-800 text-white px-3 py-2 rounded-md border border-gray-700"
-                >
-                  <option value="">-- Select --</option>
-                  {options?.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              )}
-
-              {type === 'textarea' && (
-                <textarea
-                  name={name}
-                  value={formData[name]}
-                  onChange={handleChange}
-                  className="bg-gray-800 text-white px-3 py-2 rounded-md border border-gray-700 min-h-[80px]"
-                />
-              )}
-
-              {errors[name] && (
-                <span className="text-red-500 text-sm">{errors[name]}</span>
-              )}
-            </div>
-          ))}
-
-          <div className="text-center pt-4">
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 transition px-6 py-2 rounded-md text-white font-medium"
-            >
-              Submit Feedback
-            </button>
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Skeleton className="h-64 rounded-xl bg-gray-800/50" />
+              </motion.div>
+            ))}
           </div>
-        </form>
+        ) : forms.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center py-16"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-16 w-16 text-gray-500 mb-4"
+            >
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+              <path d="M12 9v4" />
+              <path d="M12 17h.01" />
+            </svg>
+            <h3 className="text-xl font-medium text-gray-300 mb-2">
+              No forms available
+            </h3>
+            <p className="text-gray-500 text-center max-w-md">
+              There are currently no feedback forms to display. Please check back later.
+            </p>
+          </motion.div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {forms.map((form, index) => (
+              <motion.div
+                key={form.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <Card className="bg-gray-900/70 border border-gray-800 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-gray-700 backdrop-blur-sm">
+                  <CardHeader className="border-b border-gray-800 pb-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="bg-blue-500/10 p-2 rounded-lg">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-5 w-5 text-blue-400"
+                        >
+                          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                          <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                      </div>
+                      <CardTitle className="text-lg font-semibold text-gray-100">
+                        {form.title}
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-4 flex flex-col gap-4">
+                    <div className="text-xs text-gray-500">
+                      Created: {new Date(form.createdAt).toLocaleDateString()}
+                    </div>
+                    <Link href={`/student/forms/${form.id}`}>
+                      <Button
+                        className="w-full bg-blue-600 hover:bg-blue-500 text-white transition-colors duration-300"
+                        size="sm"
+                      >
+                        Fill Out Form
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
-};
-
-export default InterviewFeedbackForm;
+}

@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { formId: string } }
 ) {
   try {
-    const { formId } = await params;
+    const { formId } =  params;
     
     const form = await prisma.feedbackForm.findUnique({
       where: { id: formId },
@@ -33,7 +33,7 @@ export async function PUT(
   { params }: { params: { formId: string } }
 ) {
   try {
-    const { formId } = await params;
+    const { formId } =  params;
     const body = await req.json();
     const { title, questions } = body;
 
@@ -57,5 +57,24 @@ export async function PUT(
   } catch (error) {
     console.error("PUT form error:", error);
     return NextResponse.json({ error: "Failed to update form" }, { status: 500 });
+  }
+}
+
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { formId: string } }
+) {
+  try {
+    const { formId } =  params;
+
+    await prisma.feedbackForm.delete({
+      where: { id: formId },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("DELETE form error:", error);
+    return NextResponse.json({ error: "Failed to delete form" }, { status: 500 });
   }
 }
