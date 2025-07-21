@@ -1,16 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { NextRequest } from "next/server"; // Import NextRequest for better type safety
 
 const prisma = new PrismaClient();
 
 // GET: fetch a single form by ID
 export async function GET(
-  req: Request,
+  req: NextRequest, // Use NextRequest for better typing of the request object
   { params }: { params: { formId: string } }
 ) {
   try {
-    const { formId } = await params;
-    
+    const { formId } = params; // CORRECTED: Removed await
+
     const form = await prisma.feedbackForm.findUnique({
       where: { id: formId },
       include: { questions: true },
@@ -29,11 +30,11 @@ export async function GET(
 
 // PUT: update form by ID
 export async function PUT(
-  req: Request,
+  req: NextRequest, // Use NextRequest
   { params }: { params: { formId: string } }
 ) {
   try {
-    const { formId } = await params;
+    const { formId } = params; // CORRECTED: Removed await
     const body = await req.json();
     const { title, questions } = body;
 
@@ -43,7 +44,7 @@ export async function PUT(
         title,
         questions: {
           deleteMany: {}, // remove old questions
-          create: questions.map((q: any) => ({
+          create: questions.map((q: any) => ({ // Consider defining an interface for 'q' for better type safety
             question: q.question,
             type: q.type,
             required: q.required,
@@ -60,13 +61,13 @@ export async function PUT(
   }
 }
 
-
+// DELETE: delete form by ID
 export async function DELETE(
-  req: Request,
+  req: NextRequest, // Use NextRequest
   { params }: { params: { formId: string } }
 ) {
   try {
-    const { formId } = await  params;
+    const { formId } = params; // CORRECTED: Removed await
 
     await prisma.feedbackForm.delete({
       where: { id: formId },
