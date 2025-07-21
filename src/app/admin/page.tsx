@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import { PlusCircle, Edit3, BarChart3 } from 'lucide-react';
+import { PlusCircle, Edit3, BarChart3,Package} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const AdminDashboard = () => {
@@ -37,6 +37,15 @@ const AdminDashboard = () => {
             path: '/admin/dashboard',
             gradient: 'from-green-500 to-teal-500',
             hoverGradient: 'from-green-600 to-teal-600'
+        },
+        {
+            id: 'Summary',
+            title: 'Summary',
+            description: 'View AI generated analysis',
+            icon: Package,
+            path: '/admin/summary',
+            gradient: 'from-yellow-500 to-teal-500',
+            hoverGradient: 'from-green-600 to-teal-600'
         }
     ];
 
@@ -51,10 +60,9 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                     {cards.map((card) => {
                         const IconComponent = card.icon;
-
                         return (
                             <div
                                 key={card.id}
