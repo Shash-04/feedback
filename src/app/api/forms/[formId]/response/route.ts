@@ -5,13 +5,12 @@ const prisma = new PrismaClient();
 
 export async function POST(
   req: NextRequest,
-  context: { params: { formId: string } }
+  { params }: { params: Record<string, string> }
 ) {
   try {
-    const { formId } = context.params;
+    const { formId } = params;
     const { answers } = await req.json();
 
-    // Create a new FeedbackResponse
     const feedbackResponse = await prisma.feedbackResponse.create({
       data: {
         form: { connect: { id: formId } },

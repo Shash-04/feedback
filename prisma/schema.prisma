@@ -8,97 +8,85 @@ datasource db {
 }
 
 model PlacementFeedback {
-  id                         String   @id @default(uuid())
-  studentName                String
-  studentId                  String
-  department                 String
-  placementCommunication     String
-  trainingRelevance          String
-  mockInterviewsHelpful      String
-  coordinationRating         String
-  suggestions                String
-  wishlistCompanies          String
-  createdAt                  DateTime @default(now())
+  id                     String   @id @default(uuid())
+  studentName            String
+  studentId              String
+  department             String
+  placementCommunication String
+  trainingRelevance      String
+  mockInterviewsHelpful  String
+  coordinationRating     String
+  suggestions            String
+  wishlistCompanies      String
+  createdAt              DateTime @default(now())
 }
 
 model InterviewFeedback {
-  id                         String   @id @default(uuid())
-  studentName                String
-  studentId                  String
-  companyName                String
-
-  aptitudeTestRating         String
-  interviewerProfessionalism String
-  questionRelevance          String
-  briefingHelpfulness        String
-  confidenceRating           String
-
-  aptitudeExperience         String
-  interviewQuestionTypes     String
-  toughestPart               String
+  id                             String   @id @default(uuid())
+  studentName                    String
+  studentId                      String
+  companyName                    String
+  aptitudeTestRating             String
+  interviewerProfessionalism     String
+  questionRelevance              String
+  briefingHelpfulness            String
+  confidenceRating               String
+  aptitudeExperience             String
+  interviewQuestionTypes         String
+  toughestPart                   String
   aptitudeImprovementSuggestions String
-  assessmentAccuracy         String
-
-  createdAt                  DateTime @default(now())
+  assessmentAccuracy             String
+  createdAt                      DateTime @default(now())
 }
 
 model CompanyFeedback {
-  id                   String   @id @default(uuid())
-  studentName          String
-  companyName          String
-
-  technicalSkills      String
-  problemSolving       String
-  communicationSkills  String
-  overallSatisfaction  String
-
-  taskUnderstanding    String
-  adaptability         String
-  additionalComments   String?
-
-  createdAt            DateTime @default(now())
+  id                  String   @id @default(uuid())
+  studentName         String
+  companyName         String
+  technicalSkills     String
+  problemSolving      String
+  communicationSkills String
+  overallSatisfaction String
+  taskUnderstanding   String
+  adaptability        String
+  additionalComments  String?
+  createdAt           DateTime @default(now())
 }
 
-//////////////////////////////////////////////////////////
-// ✅ Dynamic Form Builder Models (Appended Below)
-//////////////////////////////////////////////////////////
-
 model FeedbackForm {
-  id         String             @id @default(uuid())
-  title      String
-  questions  FeedbackQuestion[]
-  responses  FeedbackResponse[]
-  createdAt  DateTime           @default(now())
+  id        String             @id @default(uuid())
+  title     String
+  createdAt DateTime           @default(now())
+  questions FeedbackQuestion[]
+  responses FeedbackResponse[]
 }
 
 model FeedbackQuestion {
-  id        String           @id @default(uuid())
-  form      FeedbackForm     @relation(fields: [formId], references: [id],onDelete: Cascade)
-  formId    String
-  question  String
-  type      QuestionType
-  order     Int
-  required  Boolean          @default(false)
-  answers   Answer[]
+  id       String       @id @default(uuid())
+  formId   String
+  question String
+  type     QuestionType
+  order    Int
+  required Boolean      @default(false)
+  answers  Answer[]
+  form     FeedbackForm @relation(fields: [formId], references: [id], onDelete: Cascade)
 }
 
 model FeedbackResponse {
-  id         String     @id @default(uuid())
-  form       FeedbackForm @relation(fields: [formId], references: [id])
-  formId     String
-  answers    Answer[]
-  createdAt  DateTime   @default(now())
+  id        String       @id @default(uuid())
+  formId    String
+  createdAt DateTime     @default(now())
+  answers   Answer[]
+  form      FeedbackForm @relation(fields: [formId], references: [id])
 }
 
 model Answer {
-  id         String             @id @default(uuid())
-  response   FeedbackResponse   @relation(fields: [responseId], references: [id])
+  id         String           @id @default(uuid())
   responseId String
-
-  question   FeedbackQuestion   @relation(fields: [questionId], references: [id])
   questionId String
-
   answer     String
+  question   FeedbackQuestion @relation(fields: [questionId], references: [id],onDelete: Cascade)
+  response   FeedbackResponse @relation(fields: [responseId], references: [id])
 }
 
 enum QuestionType {

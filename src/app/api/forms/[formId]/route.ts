@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { formId: string } }
 ) {
   try {
-    const { formId } =  params;
+    const { formId } = await params;
     
     const form = await prisma.feedbackForm.findUnique({
       where: { id: formId },
@@ -33,7 +33,7 @@ export async function PUT(
   { params }: { params: { formId: string } }
 ) {
   try {
-    const { formId } =  params;
+    const { formId } = await params;
     const body = await req.json();
     const { title, questions } = body;
 
@@ -66,7 +66,7 @@ export async function DELETE(
   { params }: { params: { formId: string } }
 ) {
   try {
-    const { formId } =  params;
+    const { formId } = await  params;
 
     await prisma.feedbackForm.delete({
       where: { id: formId },
