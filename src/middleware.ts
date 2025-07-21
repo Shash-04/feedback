@@ -2,10 +2,10 @@ import { withAuth } from "next-auth/middleware";
 
 export default withAuth({
   pages: {
-    signIn: "/login", // Redirect here if not authenticated
+    signIn: "/login", // redirect if not logged in
   },
 });
 
 export const config = {
-  matcher: ["/dashboard/:path*"], // Protect all routes under /dashboard
+  matcher: ["/admin/:path*", "/admin"], // protect only /admin and its subroutes
 };

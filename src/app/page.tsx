@@ -33,14 +33,14 @@ export default function Home() {
         transition={{ delay: 0.6, duration: 0.8 }}
         className="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-none justify-center"
       >
-        <Link href="/dashboard" className="w-full sm:w-auto">
+        <Link href="/admin" className="w-full sm:w-auto">
           <button className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-6 rounded-full transition duration-300 shadow-lg hover:shadow-purple-800">
-            Go to Dashboard
+            Admin
           </button>
         </Link>
-        <Link href="/summary" className="w-full sm:w-auto">
+        <Link href="/student" className="w-full sm:w-auto">
           <button className="w-full sm:w-auto border border-purple-500 hover:bg-purple-800 text-white font-medium py-2 px-6 rounded-full transition duration-300">
-            Summary
+            Student
           </button>
         </Link>
       </motion.div>
