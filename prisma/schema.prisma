@@ -58,3 +58,50 @@ model CompanyFeedback {
 
   createdAt            DateTime @default(now())
 }
+
+//////////////////////////////////////////////////////////
+// ✅ Dynamic Form Builder Models (Appended Below)
+//////////////////////////////////////////////////////////
+
+model FeedbackForm {
+  id         String             @id @default(uuid())
+  title      String
+  questions  FeedbackQuestion[]
+  responses  FeedbackResponse[]
+  createdAt  DateTime           @default(now())
+}
+
+model FeedbackQuestion {
+  id        String           @id @default(uuid())
+  form      FeedbackForm     @relation(fields: [formId], references: [id])
+  formId    String
+  question  String
+  type      QuestionType
+  order     Int
+  required  Boolean          @default(false)
+  answers   Answer[]
+}
+
+model FeedbackResponse {
+  id         String     @id @default(uuid())
+  form       FeedbackForm @relation(fields: [formId], references: [id])
+  formId     String
+  answers    Answer[]
+  createdAt  DateTime   @default(now())
+}
+
+model Answer {
+  id         String             @id @default(uuid())
+  response   FeedbackResponse   @relation(fields: [responseId], references: [id])
+  responseId String
+
+  question   FeedbackQuestion   @relation(fields: [questionId], references: [id])
+  questionId String
+
+  answer     String
+}
+
+enum QuestionType {
+  DESCRIPTIVE
+  RATING
+}
