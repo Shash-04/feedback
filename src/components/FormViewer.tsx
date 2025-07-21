@@ -1,137 +1,211 @@
 "use client";
 
-import { useState } from "react";
-import { Check, AlertCircle, Send, Pencil, FileText } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Loader, FileText, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
-type Question = {
+interface Question {
   id: string;
   question: string;
   type: "DESCRIPTIVE" | "RATING";
   required: boolean;
-  order: number;
-};
+}
 
-type FormData = {
+interface FeedbackForm {
   id: string;
   title: string;
+  description?: string;
   questions: Question[];
-};
+}
 
-type Props = {
-  formData: FormData;
-};
+interface Props {
+  formId: string;
+}
 
-const Notification = ({ message, type, visible, onClose }: {
-  message: string;
-  type: 'success' | 'error';
-  visible: boolean;
-  onClose: () => void;
-}) => {
-  if (!visible) return null;
-
-  return (
-    <div className="fixed top-4 right-4 z-50">
-      <div className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-lg border ${
-        type === 'success' 
-          ? 'bg-gray-800 border-green-600 text-green-400' 
-          : 'bg-gray-800 border-red-600 text-red-400'
-      }`}>
-        {type === 'success' ? <Check className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
-        <span className="text-white">{message}</span>
-        <button onClick={onClose} className="ml-2 text-gray-400 hover:text-white">×</button>
-      </div>
-    </div>
-  );
-};
-
-export default function FormViewer({ formData }: Props) {
+export const FormViewer: React.FC<Props> = ({ formId }) => {
+  const [form, setForm] = useState<FeedbackForm | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [notification, setNotification] = useState({ visible: false, message: '', type: 'success' as 'success' | 'error' });
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  const showNotification = (message: string, type: 'success' | 'error') => {
-    setNotification({ visible: true, message, type });
-    setTimeout(() => setNotification(prev => ({ ...prev, visible: false })), 4000);
-  };
+  useEffect(() => {
+    const fetchForm = async () => {
+      try {
+        const res = await fetch(`/api/forms/${formId}`);
+        const data = await res.json();
+        setForm(data);
+      } catch (err) {
+        toast.error("Failed to load form", {
+          position: "top-center",
+          duration: 2000,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleChange = (id: string, value: string) => {
-    setAnswers(prev => ({ ...prev, [id]: value }));
+    fetchForm();
+  }, [formId]);
+
+  const handleChange = (questionId: string, value: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
   };
 
   const handleSubmit = async () => {
-    const formattedAnswers = formData.questions.map(q => ({
-      questionId: q.id,
-      value: answers[q.id] || ""
-    }));
+    if (!form) return;
+
+    const missingRequired = form.questions.some(
+      (q) => q.required && !answers[q.id]
+    );
+
+    if (missingRequired) {
+      toast.error("Please fill all required fields", {
+        position: "top-center",
+        duration: 2000,
+      });
+      return;
+    }
 
     try {
-      const res = await fetch(`/api/forms/${formData.id}/response`, {
+      setSubmitting(true);
+      const res = await fetch(`/api/forms/${formId}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers: formattedAnswers }),
+        body: JSON.stringify({
+          answers: Object.entries(answers).map(([questionId, responseText]) => ({
+            questionId,
+            responseText,
+          })),
+        }),
       });
 
       if (res.ok) {
-        showNotification("Form submitted successfully!", "success");
+        toast.success("Response submitted successfully!", {
+          position: "top-center",
+          duration: 2000,
+        });
         setAnswers({});
       } else {
-        showNotification("Failed to submit form.", "error");
+        throw new Error("Submission failed");
       }
     } catch (err) {
-      showNotification("Server error. Try again later.", "error");
+      toast.error("Something went wrong", {
+        position: "top-center",
+        duration: 2000,
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-900 text-white px-4 py-8">
-      <Notification {...notification} onClose={() => setNotification(prev => ({ ...prev, visible: false }))} />
+  if (loading)
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <Loader className="h-8 w-8 text-blue-400 animate-spin" />
+      </div>
+    );
 
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <FileText className="h-8 w-8 text-blue-400" />
-          <h1 className="text-3xl font-bold">{formData.title}</h1>
+  if (!form) 
+    return (
+      <div className="text-center py-16">
+        <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-8 max-w-md mx-auto backdrop-blur-sm">
+          <div className="bg-red-500/10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <AlertCircle className="h-8 w-8 text-red-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-100 mb-2">Form not found</h3>
+          <p className="text-gray-400">The requested form could not be loaded.</p>
+        </div>
+      </div>
+    );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 py-10 px-4 sm:px-6">
+      <div className="max-w-2xl mx-auto bg-gray-900/70 border border-gray-800 rounded-2xl p-6 sm:p-8 backdrop-blur-sm shadow-xl">
+        {/* Form Header */}
+        <div className="mb-8">
+          <div className="flex items-start gap-4 mb-2">
+            <div className="bg-blue-500/10 p-3 rounded-xl">
+              <FileText className="h-6 w-6 text-blue-400" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">
+                {form.title}
+              </h1>
+              {form.description && (
+                <p className="text-gray-400 mt-2">{form.description}</p>
+              )}
+            </div>
+          </div>
+          <div className="border-b border-gray-800 pt-4"></div>
         </div>
 
-        <form className="space-y-8">
-          {formData.questions.sort((a, b) => a.order - b.order).map((q, i) => (
-            <div key={q.id} className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <label className="block mb-2 text-lg font-medium text-white">
-                {i + 1}. {q.question} {q.required && <span className="text-red-500">*</span>}
+        {/* Questions */}
+        <div className="space-y-8">
+          {form.questions.map((q, index) => (
+            <div key={q.id} className="space-y-3">
+              <label className="block font-medium text-gray-300">
+                <span className="text-blue-400">{index + 1}.</span> {q.question}
+                {q.required && <span className="text-red-400 ml-1">*</span>}
               </label>
 
-              {q.type === "DESCRIPTIVE" ? (
-                <textarea
-                  rows={3}
+              {q.type === "DESCRIPTIVE" && (
+                <Textarea
                   value={answers[q.id] || ""}
                   onChange={(e) => handleChange(q.id, e.target.value)}
-                  required={q.required}
                   placeholder="Type your answer here..."
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-gray-800/50 border-gray-700 text-gray-100 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent min-h-[120px]"
                 />
-              ) : (
-                <select
+              )}
+
+              {q.type === "RATING" && (
+                <Select
                   value={answers[q.id] || ""}
-                  onChange={(e) => handleChange(q.id, e.target.value)}
-                  required={q.required}
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onValueChange={(val) => handleChange(q.id, val)}
                 >
-                  <option value="">Select a rating</option>
-                  {[1, 2, 3, 4, 5].map((val) => (
-                    <option key={val} value={val}>{val}</option>
-                  ))}
-                </select>
+                  <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-100 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent h-12">
+                    <SelectValue placeholder="Select a rating (1-5)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700 text-gray-100">
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SelectItem 
+                        key={num} 
+                        value={String(num)}
+                        className="hover:bg-gray-700/50 focus:bg-gray-700/50"
+                      >
+                        {num}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
             </div>
           ))}
-        </form>
+        </div>
 
-        <button
-          onClick={handleSubmit}
-          className="mt-8 flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors"
-        >
-          <Send className="h-5 w-5" />
-          Submit
-        </button>
+        {/* Submit Button */}
+        <div className="mt-10">
+          <Button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="w-full h-12 bg-blue-600/90 hover:bg-blue-500/90 text-white text-lg font-medium rounded-xl transition-all"
+          >
+            {submitting ? (
+              <div className="flex items-center gap-2">
+                <Loader className="h-5 w-5 animate-spin" />
+                <span>Submitting...</span>
+              </div>
+            ) : (
+              "Submit Feedback"
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );
-}
+};
