@@ -8,14 +8,17 @@ import FormEditor from "@/components/admin/FormEditor";
 import { motion } from "framer-motion";
 
 export default function EditFormPage() {
-  const { formId } = useParams();
-  const [formData, setFormData] = useState(null);
+  const params = useParams();
+  const formId = typeof params?.formId === "string" ? params.formId : Array.isArray(params?.formId) ? params.formId[0] : "";
+
+  const [formData, setFormData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchForm() {
       try {
         const res = await fetch(`/api/forms/${formId}`);
+        if (!res.ok) throw new Error("Fetch failed");
         const data = await res.json();
         setFormData(data);
       } catch (err) {
