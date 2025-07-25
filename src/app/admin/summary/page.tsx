@@ -154,7 +154,7 @@ export default function FormList() {
             <div className="bg-blue-500/10 p-2 rounded-lg">
               <FileText className="h-8 w-8 text-blue-400" />
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold text-white">
               View Summary
             </h1>
           </div>
