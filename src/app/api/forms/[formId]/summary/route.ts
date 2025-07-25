@@ -11,6 +11,7 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   ssl: { rejectUnauthorized: false },
 });
+
 type Shashwat = {
   params: Promise<{ formId: string }>;
 };
@@ -68,28 +69,47 @@ export async function GET(
       allFeedbackText += `🧾 Response ID: ${id}\n🕒 Submitted At: ${timestamps[id]}\n`;
       allFeedbackText += answers.join('\n') + '\n\n';
     }
-
     const prompt = new PromptTemplate({
-      inputVariables: ['feedback'],
-      template: `
-You are a professional summarization assistant. The following is feedback collected from multiple reviewers about different students as part of a company feedback form.
+  inputVariables: ['feedback'],
+  template: `You are a professional data analysis assistant. Analyze this feedback and return JSON with:
+- A brief summary
+- Common themes with counts
+- Average ratings
+- Top strengths and weaknesses
+- Sentiment analysis
+- Frequent words
+- Timeline data if available
 
-The questions and answers may vary across entries.
+Return ONLY valid JSON in this exact structure:
+{{
+  "summary": "brief overview",
+  "themes": [{{"name": "theme1", "count": 1}}],
+  "ratings": {{
+    "categories": ["category1"],
+    "averages": [4.5]
+  }},
+  "strengths": ["strength1"],
+  "weaknesses": ["weakness1"],
+  "sentiment": {{
+    "positive": 70,
+    "neutral": 20,
+    "negative": 10
+  }},
+  "wordCloud": [{{"text": "word1", "value": 5}}],
+  "timeline": [{{"date": "2023-01-01", "count": 5, "avgSentiment": 3.5}}],
+  "recommendations": ["recommendation1"]
+}}
 
-Your task:
-- Analyze the responses collectively.
-- Identify common themes or trends in feedback.
-- Mention frequently observed strengths, weaknesses, behavior, professionalism, and recommendations.
-- Highlight insights like most common ratings, general satisfaction, and areas students typically excel or struggle in.
-
-Feedback:
------------------------
+Feedback Data:
 {feedback}
------------------------
 
-Generate a detailed, structured summary that can be used in a report to the academic coordinator. Use a formal tone.
-`,
-    });
+Important Rules:
+1. Output must be valid JSON only
+2. No additional text outside the JSON
+3. No markdown formatting
+4. Ensure all brackets are properly closed`
+});
+
 
     const model = new ChatGroq({
       apiKey: process.env.GROQ_API_KEY!,
@@ -98,9 +118,18 @@ Generate a detailed, structured summary that can be used in a report to the acad
     });
 
     const chain = new LLMChain({ llm: model, prompt });
-    const summary = await chain.run({ feedback: allFeedbackText });
+    const result = await chain.run({ feedback: allFeedbackText });
 
-    return NextResponse.json({ summary });
+    // Parse the JSON response
+    let jsonResult;
+    try {
+      jsonResult = JSON.parse(result.replace(/```json|```/g, '').trim());
+    } catch (e) {
+      console.error('Failed to parse JSON:', result);
+      return NextResponse.json({ error: 'Failed to parse summary data' }, { status: 500 });
+    }
+
+    return NextResponse.json(jsonResult);
   } catch (err) {
     console.error('Summary generation failed:', err);
     return NextResponse.json({ error: 'Failed to generate summary' }, { status: 500 });

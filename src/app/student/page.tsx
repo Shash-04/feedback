@@ -60,7 +60,7 @@ export default function StudentFormsPage() {
             <path d="M16 17H8" />
             <path d="M10 9H8" />
           </svg>
-          <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-center  bg-clip-text text-white">
             Available Feedback Forms
           </h1>
           <p className="text-gray-400 mt-2 text-center max-w-lg">
