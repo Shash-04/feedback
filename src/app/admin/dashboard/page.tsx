@@ -1,527 +1,129 @@
-"use client"
-import React, { useState } from 'react';
-import { Search, Filter, Users, Building, MessageSquare, Calendar, Star, TrendingUp, Eye, MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
+"use client";
 
-interface PlacementFeedback {
+import { Calendar, FileText, PieChart, PlusCircle } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+
+interface FeedbackForm {
     id: string;
-    studentName: string;
-    studentId: string;
-    department: string;
-    placementCommunication: string;
-    trainingRelevance: string;
-    mockInterviewsHelpful: string;
-    coordinationRating: string;
-    suggestions: string;
-    wishlistCompanies: string;
+    title: string;
+    description: string;
     createdAt: string;
+    responsesCount: number;
 }
 
-interface InterviewFeedback {
-    id: string;
-    studentName: string;
-    studentId: string;
-    companyName: string;
-    aptitudeTestRating: string;
-    interviewerProfessionalism: string;
-    questionRelevance: string;
-    briefingHelpfulness: string;
-    confidenceRating: string;
-    aptitudeExperience: string;
-    interviewQuestionTypes: string;
-    toughestPart: string;
-    aptitudeImprovementSuggestions: string;
-    assessmentAccuracy: string;
-    createdAt: string;
-}
+export default function AdminDashboard() {
+    const [forms, setForms] = useState<FeedbackForm[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
-interface CompanyFeedback {
-    id: string;
-    studentName: string;
-    companyName: string;
-    technicalSkills: string;
-    problemSolving: string;
-    communicationSkills: string;
-    overallSatisfaction: string;
-    taskUnderstanding: string;
-    adaptability: string;
-    additionalComments?: string;
-    createdAt: string;
-}
-
-const Dashboard = () => {
-    const [activeTab, setActiveTab] = useState('placement');
-    const [searchTerm, setSearchTerm] = useState('');
-
-    // Sample data - replace with your actual data fetching
-    const placementData = [
-        {
-            id: '1',
-            studentName: 'John Doe',
-            studentId: 'CS2021001',
-            department: 'Computer Science',
-            placementCommunication: 'Excellent',
-            trainingRelevance: 'Good',
-            mockInterviewsHelpful: 'Very Helpful',
-            coordinationRating: '4.5',
-            suggestions: 'More mock interviews needed',
-            wishlistCompanies: 'Google, Microsoft, Amazon',
-            createdAt: '2024-01-15T10:00:00Z'
-        },
-        {
-            id: '2',
-            studentName: 'Jane Smith',
-            studentId: 'CS2021002',
-            department: 'Computer Science',
-            placementCommunication: 'Good',
-            trainingRelevance: 'Excellent',
-            mockInterviewsHelpful: 'Helpful',
-            coordinationRating: '4.2',
-            suggestions: 'More technical preparation',
-            wishlistCompanies: 'Apple, Netflix, Spotify',
-            createdAt: '2024-01-14T14:30:00Z'
+    const fetchForms = async () => {
+        try {
+            setLoading(true);
+            setError(false);
+            const res = await fetch("/api/forms");
+            if (!res.ok) throw new Error("Failed to fetch forms");
+            const data = await res.json();
+            setForms(data);
+        } catch (err) {
+            setError(true);
+        } finally {
+            setLoading(false);
         }
-    ];
-
-    const interviewData = [
-        {
-            id: '1',
-            studentName: 'Alice Johnson',
-            studentId: 'CS2021003',
-            companyName: 'TechCorp',
-            aptitudeTestRating: 'Good',
-            interviewerProfessionalism: 'Excellent',
-            questionRelevance: 'Very Relevant',
-            briefingHelpfulness: 'Helpful',
-            confidenceRating: '4.0',
-            aptitudeExperience: 'Challenging but fair',
-            interviewQuestionTypes: 'Technical, Behavioral',
-            toughestPart: 'System design questions',
-            aptitudeImprovementSuggestions: 'More practice with algorithms',
-            assessmentAccuracy: 'Accurate',
-            createdAt: '2024-01-16T09:15:00Z'
-        }
-    ];
-
-    const companyData = [
-        {
-            id: '1',
-            studentName: 'Bob Wilson',
-            companyName: 'InnovateLabs',
-            technicalSkills: 'Excellent',
-            problemSolving: 'Good',
-            communicationSkills: 'Very Good',
-            overallSatisfaction: '4.3',
-            taskUnderstanding: 'Clear',
-            adaptability: 'High',
-            additionalComments: 'Great learning experience',
-            createdAt: '2024-01-17T16:45:00Z'
-        }
-    ];
-
-    const getRatingColor = (rating: string) => {
-        const numRating = parseFloat(rating);
-        if (numRating >= 4.5) return 'text-green-400';
-        if (numRating >= 4.0) return 'text-blue-400';
-        if (numRating >= 3.5) return 'text-yellow-400';
-        return 'text-red-400';
     };
 
-    const getQualityColor = (quality: string) => {
-        const lower = quality.toLowerCase();
-        if (lower.includes('excellent')) return 'text-green-400';
-        if (lower.includes('good') || lower.includes('helpful')) return 'text-blue-400';
-        if (lower.includes('average') || lower.includes('okay')) return 'text-yellow-400';
-        return 'text-gray-400';
-    };
+    useEffect(() => {
+        fetchForms();
+    }, []);
 
-    const formatDate = (dateString: string | number | Date) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
         });
     };
 
-    const PlacementCard = ({ data }: { data: PlacementFeedback }) => (
-        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-colors">
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <h3 className="text-xl font-semibold text-white">{data.studentName}</h3>
-                    <p className="text-gray-400">{data.studentId} • {data.department}</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <span className={`text-2xl font-bold ${getRatingColor(data.coordinationRating)}`}>
-                        {data.coordinationRating}
-                    </span>
-                    <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Communication:</span>
-                        <span className={`font-medium ${getQualityColor(data.placementCommunication)}`}>
-                            {data.placementCommunication}
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Training:</span>
-                        <span className={`font-medium ${getQualityColor(data.trainingRelevance)}`}>
-                            {data.trainingRelevance}
-                        </span>
-                    </div>
-                </div>
-                <div className="space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Mock Interviews:</span>
-                        <span className={`font-medium ${getQualityColor(data.mockInterviewsHelpful)}`}>
-                            {data.mockInterviewsHelpful}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="space-y-3">
-                <div>
-                    <p className="text-gray-400 text-sm mb-1">Suggestions:</p>
-                    <p className="text-gray-300 text-sm">{data.suggestions}</p>
-                </div>
-                <div>
-                    <p className="text-gray-400 text-sm mb-1">Wishlist Companies:</p>
-                    <div className="flex flex-wrap gap-2">
-                        {data.wishlistCompanies.split(', ').map((company, index) => (
-                            <span key={index} className="bg-blue-900 text-blue-200 px-2 py-1 rounded-full text-xs">
-                                {company}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-700">
-                <span className="text-gray-400 text-sm flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {formatDate(data.createdAt)}
-                </span>
-                <button className="text-gray-400 hover:text-white transition-colors">
-                    <MoreHorizontal className="w-5 h-5" />
-                </button>
-            </div>
-        </div>
-    );
-
-    const InterviewCard = ({ data }: { data: InterviewFeedback }) => (
-        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-colors">
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <h3 className="text-xl font-semibold text-white">{data.studentName}</h3>
-                    <p className="text-gray-400">{data.studentId}</p>
-                    <p className="text-blue-400 font-medium">{data.companyName}</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <span className={`text-2xl font-bold ${getRatingColor(data.confidenceRating)}`}>
-                        {data.confidenceRating}
-                    </span>
-                    <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Aptitude Test:</span>
-                        <span className={`font-medium ${getQualityColor(data.aptitudeTestRating)}`}>
-                            {data.aptitudeTestRating}
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Professionalism:</span>
-                        <span className={`font-medium ${getQualityColor(data.interviewerProfessionalism)}`}>
-                            {data.interviewerProfessionalism}
-                        </span>
-                    </div>
-                </div>
-                <div className="space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Question Relevance:</span>
-                        <span className={`font-medium ${getQualityColor(data.questionRelevance)}`}>
-                            {data.questionRelevance}
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Briefing:</span>
-                        <span className={`font-medium ${getQualityColor(data.briefingHelpfulness)}`}>
-                            {data.briefingHelpfulness}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="space-y-3">
-                <div>
-                    <p className="text-gray-400 text-sm mb-1">Question Types:</p>
-                    <p className="text-gray-300 text-sm">{data.interviewQuestionTypes}</p>
-                </div>
-                <div>
-                    <p className="text-gray-400 text-sm mb-1">Toughest Part:</p>
-                    <p className="text-gray-300 text-sm">{data.toughestPart}</p>
-                </div>
-                <div>
-                    <p className="text-gray-400 text-sm mb-1">Improvement Suggestions:</p>
-                    <p className="text-gray-300 text-sm">{data.aptitudeImprovementSuggestions}</p>
-                </div>
-            </div>
-
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-700">
-                <span className="text-gray-400 text-sm flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {formatDate(data.createdAt)}
-                </span>
-                <button className="text-gray-400 hover:text-white transition-colors">
-                    <MoreHorizontal className="w-5 h-5" />
-                </button>
-            </div>
-        </div>
-    );
-
-    const CompanyCard = ({ data }: { data: CompanyFeedback }) => (
-        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-colors">
-            <div className="flex justify-between items-start mb-4">
-                <div>
-                    <h3 className="text-xl font-semibold text-white">{data.studentName}</h3>
-                    <p className="text-blue-400 font-medium">{data.companyName}</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <span className={`text-2xl font-bold ${getRatingColor(data.overallSatisfaction)}`}>
-                        {data.overallSatisfaction}
-                    </span>
-                    <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Technical Skills:</span>
-                        <span className={`font-medium ${getQualityColor(data.technicalSkills)}`}>
-                            {data.technicalSkills}
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Problem Solving:</span>
-                        <span className={`font-medium ${getQualityColor(data.problemSolving)}`}>
-                            {data.problemSolving}
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Communication:</span>
-                        <span className={`font-medium ${getQualityColor(data.communicationSkills)}`}>
-                            {data.communicationSkills}
-                        </span>
-                    </div>
-                </div>
-                <div className="space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Task Understanding:</span>
-                        <span className={`font-medium ${getQualityColor(data.taskUnderstanding)}`}>
-                            {data.taskUnderstanding}
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-400">Adaptability:</span>
-                        <span className={`font-medium ${getQualityColor(data.adaptability)}`}>
-                            {data.adaptability}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {data.additionalComments && (
-                <div className="space-y-3">
-                    <div>
-                        <p className="text-gray-400 text-sm mb-1">Additional Comments:</p>
-                        <p className="text-gray-300 text-sm">{data.additionalComments}</p>
-                    </div>
-                </div>
-            )}
-
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-700">
-                <span className="text-gray-400 text-sm flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {formatDate(data.createdAt)}
-                </span>
-                <button className="text-gray-400 hover:text-white transition-colors">
-                    <MoreHorizontal className="w-5 h-5" />
-                </button>
-            </div>
-        </div>
-    );
-
-    const getStats = () => {
-        return {
-            placement: {
-                total: placementData.length,
-                avgRating: (placementData.reduce((sum, item) => sum + parseFloat(item.coordinationRating), 0) / placementData.length).toFixed(1)
-            },
-            interview: {
-                total: interviewData.length,
-                avgRating: (interviewData.reduce((sum, item) => sum + parseFloat(item.confidenceRating), 0) / interviewData.length).toFixed(1)
-            },
-            company: {
-                total: companyData.length,
-                avgRating: (companyData.reduce((sum, item) => sum + parseFloat(item.overallSatisfaction), 0) / companyData.length).toFixed(1)
-            }
-        };
-    };
-
-    const stats = getStats();
-
     return (
-       <div className="min-h-screen bg-gray-900 text-white">
-  {/* Header */}
-  <div className="bg-gray-800 border-b border-gray-700 px-4 py-4">
-    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      {/* Left */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">Placement Dashboard</h1>
-        <p className="text-gray-400">Track and analyze placement feedback</p>
-      </div>
+        <div className="min-h-screen bg-gray-950 text-white py-10 px-4">
+            <div className="max-w-7xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-8 flex items-center justify-between"
+                >
+                    <div>
+                        <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
+                        <p className="text-gray-400">Overview of all feedback forms</p>
+                    </div>
+                    <Link href="/admin/form-builder">
+                        <button className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                            <PlusCircle className="w-4 h-4" />
+                            New Form
+                        </button>
+                    </Link>
+                </motion.div>
 
-      {/* Middle Nav Buttons */}
-      <div className="flex flex-wrap gap-2">
-        <Link href="company">
-          <button className="border border-gray-500 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-full backdrop-blur-md hover:bg-white/10 transition duration-300">
-            Company
-          </button>
-        </Link>
-        <Link href="student">
-          <button className="border border-gray-500 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-full backdrop-blur-md hover:bg-white/10 transition duration-300">
-            Student
-          </button>
-        </Link>
-        <Link href="placement">
-          <button className="border border-gray-500 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-full backdrop-blur-md hover:bg-white/10 transition duration-300">
-            Placement
-          </button>
-        </Link>
-      </div>
-
-      {/* Right Search */}
-      <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-        <div className="relative w-full sm:w-auto">
-          <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search feedback..."
-            className="w-full sm:w-64 bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+                    {loading ? (
+                        Array.from({ length: 3 }).map((_, idx) => (
+                            <div
+                                key={idx}
+                                className="bg-gray-800/60 border border-gray-700 p-6 rounded-xl animate-pulse"
+                            >
+                                <div className="h-6 bg-gray-700 rounded w-3/4 mb-3" />
+                                <div className="h-4 bg-gray-700 rounded w-full mb-2" />
+                                <div className="h-4 bg-gray-700 rounded w-2/3" />
+                            </div>
+                        ))
+                    ) : error ? (
+                        <div className="col-span-full text-center text-red-400">
+                            Failed to load dashboard data.
+                        </div>
+                    ) : forms.length === 0 ? (
+                        <div className="col-span-full text-center text-gray-400">
+                            No forms available.
+                        </div>
+                    ) : (
+                        forms.map((form, idx) => (
+                            <motion.div
+                                key={form.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.1 }}
+                                whileHover={{ scale: 1.02 }}
+                                className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow hover:shadow-purple-700 transition"
+                            >
+                                <Link href={`/admin/forms/${form.id}`}>
+                                    <div className="cursor-pointer">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <FileText className="text-purple-400 w-5 h-5" />
+                                            <h3 className="text-lg font-semibold line-clamp-1">
+                                                {form.title}
+                                            </h3>
+                                        </div>
+                                        <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+                                            {form.description || "No description provided."}
+                                        </p>
+                                        <div className="flex justify-between text-xs text-gray-500">
+                                            <span className="flex items-center gap-1">
+                                                <Calendar className="w-4 h-4" />
+                                                {formatDate(form.createdAt)}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <PieChart className="w-4 h-4" />
+                                                {form.responsesCount || 0} responses
+                                            </span>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </motion.div>
+                        ))
+                    )}
+                </div>
+            </div>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors w-full sm:w-auto">
-          <Filter className="w-5 h-5" />
-        </button>
-      </div>
-    </div>
-  </div>
-
-  {/* Stats Cards */}
-  <div className="px-4 py-6">
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-      {/* Placement */}
-      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-gray-400 text-sm">Placement Feedback</p>
-            <p className="text-2xl font-bold text-white">{stats.placement.total}</p>
-            <p className="text-green-400 text-sm">Avg: {stats.placement.avgRating}/5</p>
-          </div>
-          <div className="bg-blue-900 p-3 rounded-full">
-            <Users className="w-8 h-8 text-blue-400" />
-          </div>
-        </div>
-      </div>
-
-      {/* Interview */}
-      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-gray-400 text-sm">Interview Feedback</p>
-            <p className="text-2xl font-bold text-white">{stats.interview.total}</p>
-            <p className="text-green-400 text-sm">Avg: {stats.interview.avgRating}/5</p>
-          </div>
-          <div className="bg-green-900 p-3 rounded-full">
-            <MessageSquare className="w-8 h-8 text-green-400" />
-          </div>
-        </div>
-      </div>
-
-      {/* Company */}
-      <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-gray-400 text-sm">Company Feedback</p>
-            <p className="text-2xl font-bold text-white">{stats.company.total}</p>
-            <p className="text-green-400 text-sm">Avg: {stats.company.avgRating}/5</p>
-          </div>
-          <div className="bg-purple-900 p-3 rounded-full">
-            <Building className="w-8 h-8 text-purple-400" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* Tab Navigation */}
-    <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 mb-6 bg-gray-800 p-1 rounded-lg">
-      <button
-        onClick={() => setActiveTab('placement')}
-        className={`w-full sm:w-auto py-2 px-4 rounded-md transition-colors ${activeTab === 'placement'
-          ? 'bg-blue-600 text-white'
-          : 'text-gray-400 hover:text-white'
-          }`}
-      >
-        Placement Feedback
-      </button>
-      <button
-        onClick={() => setActiveTab('interview')}
-        className={`w-full sm:w-auto py-2 px-4 rounded-md transition-colors ${activeTab === 'interview'
-          ? 'bg-blue-600 text-white'
-          : 'text-gray-400 hover:text-white'
-          }`}
-      >
-        Interview Feedback
-      </button>
-      <button
-        onClick={() => setActiveTab('company')}
-        className={`w-full sm:w-auto py-2 px-4 rounded-md transition-colors ${activeTab === 'company'
-          ? 'bg-blue-600 text-white'
-          : 'text-gray-400 hover:text-white'
-          }`}
-      >
-        Company Feedback
-      </button>
-    </div>
-
-    {/* Content Cards */}
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {activeTab === 'placement' && placementData.map((item) => (
-        <PlacementCard key={item.id} data={item} />
-      ))}
-      {activeTab === 'interview' && interviewData.map((item) => (
-        <InterviewCard key={item.id} data={item} />
-      ))}
-      {activeTab === 'company' && companyData.map((item) => (
-        <CompanyCard key={item.id} data={item} />
-      ))}
-    </div>
-  </div>
-</div>
-
     );
-};
-
-export default Dashboard;
+}

@@ -47,7 +47,7 @@ const EmptyState = () => (
       </div>
       <h3 className="text-xl font-semibold text-gray-100 mb-2">No forms found</h3>
       <p className="text-gray-400 mb-6">You haven't created any forms yet.</p>
-      <Link href="/admin/forms/create">
+      <Link href="/admin/forms/form-builder">
         <Button className="bg-blue-600 hover:bg-blue-500 text-white">
           Create Your First Form
         </Button>
