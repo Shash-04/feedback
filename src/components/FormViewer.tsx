@@ -2,10 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Loader, FileText, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 
 interface Question {
   id: string;
@@ -28,6 +34,7 @@ interface Props {
 export const FormViewer: React.FC<Props> = ({ formId }) => {
   const [form, setForm] = useState<FeedbackForm | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -37,11 +44,8 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
         const res = await fetch(`/api/forms/${formId}`);
         const data = await res.json();
         setForm(data);
-      } catch (err) {
-        toast.error("Failed to load form", {
-          position: "top-center",
-          duration: 2000,
-        });
+      } catch {
+        // handle error silently here if needed
       } finally {
         setLoading(false);
       }
@@ -55,22 +59,39 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
       ...prev,
       [questionId]: value,
     }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [questionId]: "", // Clear error on change
+    }));
+  };
+
+  const getWordCount = (text: string) =>
+    text.trim().split(/\s+/).filter((word) => word !== "").length;
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+
+    form?.questions.forEach((q) => {
+      const val = answers[q.id]?.trim() || "";
+
+      if (q.required && !val) {
+        newErrors[q.id] = "This field is required.";
+      } else if (q.type === "DESCRIPTIVE") {
+        const wc = getWordCount(val);
+        if (wc < 5 || wc > 250) {
+          newErrors[q.id] = "Answer must be between 5 and 250 words.";
+        }
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
     if (!form) return;
-
-    const missingRequired = form.questions.some(
-      (q) => q.required && !answers[q.id]
-    );
-
-    if (missingRequired) {
-      toast.error("Please fill all required fields", {
-        position: "top-center",
-        duration: 2000,
-      });
-      return;
-    }
+    if (!validate()) return;
 
     try {
       setSubmitting(true);
@@ -78,27 +99,24 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          answers: Object.entries(answers).map(([questionId, responseText]) => ({
-            questionId,
-            responseText,
-          })),
+          answers: Object.entries(answers).map(
+            ([questionId, responseText]) => ({
+              questionId,
+              responseText,
+            })
+          ),
         }),
       });
 
       if (res.ok) {
-        toast.success("Response submitted successfully!", {
-          position: "top-center",
-          duration: 2000,
-        });
         setAnswers({});
+        setErrors({});
+        toast.success("Feedback submitted successfully!"); 
       } else {
         throw new Error("Submission failed");
       }
-    } catch (err) {
-      toast.error("Something went wrong", {
-        position: "top-center",
-        duration: 2000,
-      });
+    } catch {
+        toast.error("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -106,52 +124,55 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <Loader className="h-8 w-8 text-blue-400 animate-spin" />
+      <div className="flex justify-center items-center min-h-[60vh] bg-background">
+        <Loader className="h-8 w-8 text-muted-foreground animate-spin" />
       </div>
     );
 
-  if (!form) 
+  if (!form)
     return (
-      <div className="text-center py-16">
-        <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-8 max-w-md mx-auto backdrop-blur-sm">
+      <div className="text-center py-20 px-4">
+        <div className="bg-muted border border-border rounded-xl p-8 max-w-md mx-auto shadow-sm">
           <div className="bg-red-500/10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             <AlertCircle className="h-8 w-8 text-red-400" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-100 mb-2">Form not found</h3>
-          <p className="text-gray-400">The requested form could not be loaded.</p>
+          <h3 className="text-xl font-semibold text-foreground mb-2">
+            Form not found
+          </h3>
+          <p className="text-muted-foreground">
+            The requested form could not be loaded.
+          </p>
         </div>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 py-10 px-4 sm:px-6">
-      <div className="max-w-2xl mx-auto bg-gray-900/70 border border-gray-800 rounded-2xl p-6 sm:p-8 backdrop-blur-sm shadow-xl">
-        {/* Form Header */}
+    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 py-12 px-4 sm:px-6">
+      <div className="max-w-2xl mx-auto bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+        {/* Header */}
         <div className="mb-8">
-          <div className="flex items-start gap-4 mb-2">
+          <div className="flex items-start gap-4 mb-3">
             <div className="bg-blue-500/10 p-3 rounded-xl">
               <FileText className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">
-                {form.title}
-              </h1>
+              <h1 className="text-2xl font-bold text-white">{form.title}</h1>
               {form.description && (
-                <p className="text-gray-400 mt-2">{form.description}</p>
+                <p className="text-gray-400 mt-1">{form.description}</p>
               )}
             </div>
           </div>
-          <div className="border-b border-gray-800 pt-4"></div>
+          <div className="border-t border-gray-800 pt-4" />
         </div>
 
         {/* Questions */}
         <div className="space-y-8">
           {form.questions.map((q, index) => (
-            <div key={q.id} className="space-y-3">
-              <label className="block font-medium text-gray-300">
-                <span className="text-blue-400">{index + 1}.</span> {q.question}
-                {q.required && <span className="text-red-400 ml-1">*</span>}
+            <div key={q.id} className="space-y-2">
+              <label className="block font-medium text-gray-200">
+                <span className="text-blue-400">{index + 1}.</span>{" "}
+                {q.question}
+                {q.required && <span className="text-red-500 ml-1">*</span>}
               </label>
 
               {q.type === "DESCRIPTIVE" && (
@@ -159,7 +180,9 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
                   value={answers[q.id] || ""}
                   onChange={(e) => handleChange(q.id, e.target.value)}
                   placeholder="Type your answer here..."
-                  className="bg-gray-800/50 border-gray-700 text-gray-100 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent min-h-[120px]"
+                  className={`min-h-[120px] bg-gray-800 border ${
+                    errors[q.id] ? "border-red-500" : "border-gray-700"
+                  } text-gray-100 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-blue-500`}
                 />
               )}
 
@@ -168,15 +191,21 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
                   value={answers[q.id] || ""}
                   onValueChange={(val) => handleChange(q.id, val)}
                 >
-                  <SelectTrigger className="bg-gray-800/50 border-gray-700 text-gray-100 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent h-12">
+                  <SelectTrigger
+                    className={`h-12 bg-gray-800 text-gray-100 ${
+                      errors[q.id]
+                        ? "border-red-500"
+                        : "border border-gray-700"
+                    } focus:ring-2 focus:ring-blue-500`}
+                  >
                     <SelectValue placeholder="Select a rating (1-5)" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700 text-gray-100">
+                  <SelectContent className="bg-gray-900 text-gray-100 border-gray-700">
                     {[1, 2, 3, 4, 5].map((num) => (
-                      <SelectItem 
-                        key={num} 
+                      <SelectItem
+                        key={num}
                         value={String(num)}
-                        className="hover:bg-gray-700/50 focus:bg-gray-700/50"
+                        className="hover:bg-gray-700 focus:bg-gray-700"
                       >
                         {num}
                       </SelectItem>
@@ -184,16 +213,22 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
                   </SelectContent>
                 </Select>
               )}
+
+              {errors[q.id] && (
+                <p className="text-sm text-red-500 font-medium">
+                  {errors[q.id]}
+                </p>
+              )}
             </div>
           ))}
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <div className="mt-10">
           <Button
             onClick={handleSubmit}
             disabled={submitting}
-            className="w-full h-12 bg-blue-600/90 hover:bg-blue-500/90 text-white text-lg font-medium rounded-xl transition-all"
+            className="w-full h-12 bg-blue-600 hover:bg-blue-500 text-white text-lg font-semibold rounded-xl transition-all"
           >
             {submitting ? (
               <div className="flex items-center gap-2">

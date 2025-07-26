@@ -6,12 +6,15 @@ import Link from 'next/link';
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden">
+      {/* Glow Effect */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-purple-500 rounded-full blur-[100px] sm:blur-[120px] opacity-20 pointer-events-none" />
+
       {/* Heading */}
       <motion.h1
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-center leading-tight"
+        className="mt-7 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-center leading-tight"
       >
         Feedback<span className="text-purple-500">Analysis</span> Dashboard
       </motion.h1>
@@ -45,8 +48,40 @@ export default function Home() {
         </Link>
       </motion.div>
 
-      {/* Glow Effect */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-purple-500 rounded-full blur-[100px] sm:blur-[120px] opacity-20 pointer-events-none" />
+      {/* Feature Highlights */}
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, duration: 0.8 }}
+        className="mt-20 w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-center"
+      >
+        {[
+          {
+            title: 'Smart Analytics',
+            desc: 'AI-powered summaries and sentiment analysis.',
+            icon: '📊',
+          },
+          {
+            title: 'Fully Customizable',
+            desc: 'Build forms tailored to your department’s needs.',
+            icon: '⚙️',
+          },
+          {
+            title: 'Real-Time Insights',
+            desc: 'Instant reports and dashboards at your fingertips.',
+            icon: '⏱️',
+          },
+        ].map((feature, idx) => (
+          <div
+            key={idx}
+            className="bg-zinc-900/60 border border-zinc-700 rounded-2xl p-6 shadow-lg hover:shadow-purple-700 transition"
+          >
+            <div className="text-4xl mb-4">{feature.icon}</div>
+            <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+            <p className="text-sm text-gray-400">{feature.desc}</p>
+          </div>
+        ))}
+      </motion.section>
     </main>
   );
 }
