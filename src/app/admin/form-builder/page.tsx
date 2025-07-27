@@ -21,7 +21,7 @@ const Notification = ({ message, type, visible, onClose }: {
     if (!visible) return null;
 
     return (
-        <div className="fixed top-4 right-4 z-50">
+        <div className="fixed top-4 right-4 z-50 b">
             <div className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-lg border ${
                 type === 'success' 
                     ? 'bg-gray-800 border-green-600 text-green-400' 
@@ -115,7 +115,7 @@ export default function FormBuilder() {
                 onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
             />
             
-            <div className="min-h-screen bg-gray-900 text-white">
+            <div className="min-h-screen bg-gray-950 text-white">
                 <div className="max-w-4xl mx-auto px-4 py-8">
                     {/* Header */}
                     <div className="mb-8">

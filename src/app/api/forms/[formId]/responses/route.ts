@@ -9,20 +9,19 @@ export async function GET(
   { params }: { params: Promise<{ formId: string }> }
 ) {
   const resolvedParams = await params;
-//   console.log('API Route called with params:', resolvedParams); // Debug log
 
   const formId = resolvedParams.formId;
 
   if (!formId || typeof formId !== "string") {
-    // console.log('Invalid formId:', formId); // Debug log
+
     return NextResponse.json({ error: "Invalid form ID" }, { status: 400 });
   }
 
   const client = new Client({
-    user: "neondb_owner",
-    host: "ep-spring-math-a1a3qcuy-pooler.ap-southeast-1.aws.neon.tech",
-    database: "neondb",
-    password: "npg_V25rPGnUScai",
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
     ssl: { rejectUnauthorized: false },
   });
 
@@ -51,7 +50,7 @@ export async function GET(
     if (result.rows.length === 0) {
       console.log('No responses found, returning empty CSV'); // Debug log
       const emptyCSV = '"Response ID","Submitted At"\n';
-      
+
       return new NextResponse(emptyCSV, {
         status: 200,
         headers: {
@@ -66,16 +65,16 @@ export async function GET(
     result.rows.forEach(row => {
       const key = `${row.response_id}::${row.createdAt}`;
       if (!grouped[key]) {
-        grouped[key] = { 
-          id: row.response_id, 
-          createdAt: row.createdAt, 
-          answers: [] 
+        grouped[key] = {
+          id: row.response_id,
+          createdAt: row.createdAt,
+          answers: []
         };
       }
-      grouped[key].answers.push({ 
-        order: row.question_order, 
-        question: row.question, 
-        answer: row.answer || '' 
+      grouped[key].answers.push({
+        order: row.question_order,
+        question: row.question,
+        answer: row.answer || ''
       });
     });
 
@@ -86,12 +85,12 @@ export async function GET(
         "Response ID": res.id,
         "Submitted At": res.createdAt,
       };
-      
+
       // Add each question as a column
       answers.forEach((ans: any) => {
         entry[ans.question] = ans.answer || '';
       });
-      
+
       return entry;
     });
 
@@ -99,7 +98,7 @@ export async function GET(
     // console.log('Sample record:', records[0]); // Debug log
 
     // Generate CSV
-    const csv = stringify(records, { 
+    const csv = stringify(records, {
       header: true,
       quoted: true,
       quoted_empty: true,
@@ -119,13 +118,13 @@ export async function GET(
 
   } catch (error) {
     // console.error('Database/API error:', error); // Debug log
-    
+
     return NextResponse.json(
-      { 
-        error: "Internal server error", 
+      {
+        error: "Internal server error",
         details: error instanceof Error ? error.message : 'Unknown error',
         formId: formId
-      }, 
+      },
       { status: 500 }
     );
   } finally {

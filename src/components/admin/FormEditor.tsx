@@ -90,7 +90,7 @@ export default function FormEditor({ initialData }: { initialData: any }) {
                   <path d="M10 9H8" />
                 </svg>
               </div>
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              <CardTitle className="text-3xl font-bold  bg-clip-text text-white">
                 Form Editor
               </CardTitle>
             </div>

@@ -1,4 +1,4 @@
-import { X, Calendar, User, AlertCircle, Maximize2, Minimize2, Download } from "lucide-react";
+import { X, Calendar, User, AlertCircle, Maximize2, Minimize2, Download, BluetoothSearching } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface ResponseData {
@@ -19,12 +19,12 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [columns, setColumns] = useState<string[]>([]);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(true);
   useEffect(() => {
     if (isOpen && formId) {
       fetchResponses();
     }
-    
+
     // Handle ESC key for closing modal
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -57,19 +57,19 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
     try {
       setLoading(true);
       setError(null);
-      
+
       console.log('Fetching responses for form:', formId);
-      
+
       const response = await fetch(`/api/forms/${formId}/responses`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      
+
       console.log('Response status:', response.status);
       console.log('Response ok:', response.ok);
-      
+
       if (!response.ok) {
         // Try to get error details
         let errorMessage = `HTTP ${response.status}`;
@@ -85,23 +85,23 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
         }
         throw new Error(errorMessage);
       }
-      
+
       const csvText = await response.text();
       console.log('CSV Response received, length:', csvText.length);
       console.log('CSV Preview:', csvText.substring(0, 500));
-      
+
       if (!csvText || csvText.trim() === '') {
         console.log('Empty CSV response');
         setResponses([]);
         setColumns(['Response ID', 'Submitted At']);
         return;
       }
-      
+
       const parsedData = parseCSV(csvText);
       console.log('Parsed data:', parsedData.length, 'records');
-      
+
       setResponses(parsedData);
-      
+
       // Extract column headers
       if (parsedData.length > 0) {
         const cols = Object.keys(parsedData[0]);
@@ -110,7 +110,7 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
       } else {
         setColumns(['Response ID', 'Submitted At']);
       }
-      
+
     } catch (err) {
       console.error('Fetch error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to load responses';
@@ -124,34 +124,34 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
     try {
       const lines = csvText.trim().split('\n');
       console.log('CSV lines:', lines.length);
-      
+
       if (lines.length < 2) {
         console.log('Not enough CSV lines');
         return [];
       }
-      
+
       // Parse headers
       const headerLine = lines[0];
       console.log('Header line:', headerLine);
       const headers = parseCSVLine(headerLine);
       console.log('Parsed headers:', headers);
-      
+
       const data: ResponseData[] = [];
-      
+
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
-        
+
         const values = parseCSVLine(line);
         const row: ResponseData = {} as ResponseData;
-        
+
         headers.forEach((header, index) => {
           row[header] = values[index] || '';
         });
-        
+
         data.push(row);
       }
-      
+
       console.log('Parsed CSV data:', data.length, 'records');
       return data;
     } catch (error) {
@@ -164,11 +164,11 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
     const result: string[] = [];
     let current = '';
     let inQuotes = false;
-    
+
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
       const nextChar = line[i + 1];
-      
+
       if (char === '"') {
         if (inQuotes && nextChar === '"') {
           current += '"';
@@ -183,7 +183,7 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
         current += char;
       }
     }
-    
+
     result.push(current.trim());
     return result;
   };
@@ -243,43 +243,49 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
   if (!isOpen) return null;
 
   return (
-    <div className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ${isFullscreen ? 'z-[9999]' : 'z-50'} ${isFullscreen ? 'p-0' : 'p-4'}`}>
-      <div className={`bg-gray-900 flex flex-col transition-all duration-300 ${
-        isFullscreen 
-          ? 'w-full h-full max-w-none max-h-none m-0 rounded-none' 
-          : 'w-full max-w-6xl h-[90vh] rounded-xl'
-      }`}>
+    <div className={`mt-20 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ${isFullscreen ? 'z-[9999]' : 'z-50'} ${isFullscreen ? 'p-0' : 'p-4'}`}>
+      <div className={`bg-gray-900 flex flex-col transition-all duration-300 ${isFullscreen
+        ? 'w-full h-full max-w-none max-h-none m-0 rounded-none'
+        : 'w-full max-w-6xl h-[90vh] rounded-xl'
+        }`}>
         {/* Header - Fixed */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-800 flex-shrink-0">
-          <div>
-            <h2 className="text-xl font-semibold text-white">Form Responses</h2>
-            <p className="text-gray-400 text-sm mt-1">{formTitle}</p>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border-b border-gray-700 bg-gray-900 rounded-t-lg">
+          <div className="mb-4 sm:mb-0">
+            <h2 className="text-xl sm:text-2xl font-semibold text-white">Form Responses</h2>
+            <p className="text-gray-300 text-sm mt-1">{formTitle}</p>
             <p className="text-gray-500 text-xs mt-1">Form ID: {formId}</p>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             {responses.length > 0 && (
               <button
                 onClick={downloadCSV}
-                className="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-800 flex items-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 text-white transition-colors px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium"
                 title="Download CSV"
               >
-                <Download className="w-5 h-5" />
-                <span className="text-sm hidden sm:inline">Download CSV</span>
+                <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>Download CSV</span>
               </button>
             )}
+
             <button
               onClick={toggleFullscreen}
-              className="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-800"
+              className="bg-gray-700 hover:bg-gray-600 text-gray-200 hover:text-white transition-colors p-2 rounded-full"
               title={isFullscreen ? "Exit Fullscreen (F11)" : "Enter Fullscreen (F11)"}
             >
-              {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+              {isFullscreen ? (
+                <Minimize2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              ) : (
+                <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              )}
             </button>
+
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-800"
+              className="bg-red-600 hover:bg-red-700 text-white transition-colors p-2 rounded-full"
               title="Close (ESC)"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
@@ -343,9 +349,8 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
                       {columns.map((column, index) => (
                         <th
                           key={index}
-                          className={`px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider border-r border-gray-700 last:border-r-0 whitespace-nowrap ${
-                            isFullscreen ? 'min-w-[200px]' : 'min-w-[150px]'
-                          }`}
+                          className={`px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider border-r border-gray-700 last:border-r-0 whitespace-nowrap ${isFullscreen ? 'min-w-[200px]' : 'min-w-[150px]'
+                            }`}
                         >
                           <div className="flex items-center gap-2">
                             {column === "Response ID" && <User className="w-4 h-4" />}
@@ -365,9 +370,8 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
                         {columns.map((column, colIndex) => (
                           <td
                             key={colIndex}
-                            className={`px-4 py-3 text-sm text-gray-300 border-r border-gray-800 last:border-r-0 align-top ${
-                              isFullscreen ? 'min-w-[200px]' : 'min-w-[150px]'
-                            }`}
+                            className={`px-4 py-3 text-sm text-gray-300 border-r border-gray-800 last:border-r-0 align-top ${isFullscreen ? 'min-w-[200px]' : 'min-w-[150px]'
+                              }`}
                           >
                             <div className={`break-words ${isFullscreen ? 'max-w-md' : 'max-w-xs'}`} title={String(response[column] || '-')}>
                               {column === "Submitted At" ? (
@@ -394,25 +398,6 @@ export default function ResponsesModal({ isOpen, onClose, formId, formTitle }: R
             </div>
           )}
         </div>
-
-        {/* Footer - Fixed */}
-        {responses.length > 0 && (
-          <div className="px-6 py-4 border-t border-gray-800 bg-gray-800/50 flex-shrink-0">
-            <div className="flex items-center justify-between text-sm text-gray-400">
-              <span>Total responses: {responses.length}</span>
-              <div className="flex items-center gap-4">
-                <span>Scroll to view more rows</span>
-                <div className="flex items-center gap-2 text-xs">
-                  <span>↕ Vertical • ↔ Horizontal</span>
-                  <span className="text-gray-500">|</span>
-                  <span>F11 for fullscreen</span>
-                  <span className="text-gray-500">|</span>
-                  <span>ESC to close</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

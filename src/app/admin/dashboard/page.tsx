@@ -211,14 +211,6 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
                         </Link>
-                        <Link href="/admin/responses">
-                            <div className="bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-lg hover:border-green-500 transition-colors cursor-pointer">
-                                <div className="flex items-center gap-3">
-                                    <Users className="w-5 h-5 text-green-400" />
-                                    <span className="text-sm sm:text-base">All Responses</span>
-                                </div>
-                            </div>
-                        </Link>
                         <Link href="/admin">
                             <div className="bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-lg hover:border-blue-500 transition-colors cursor-pointer">
                                 <div className="flex items-center gap-3">

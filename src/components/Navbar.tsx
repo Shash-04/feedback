@@ -4,92 +4,45 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { User, LogOut, LogIn, Settings, Menu, X } from 'lucide-react';
+import { User, LogOut, LogIn, Menu, X } from 'lucide-react';
 import Image from 'next/image';
-
-// Navigation items from sidebar
-const navigation = [
-  { 
-    name: 'Home', 
-    href: '/', 
-    icon: () => (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-    )
-  },
-  { 
-    name: 'Dashboard', 
-    href: '/admin/dashboard', 
-    icon: () => (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    )
-  },
-  { 
-    name: 'Form Builder', 
-    href: '/admin/form-builder', 
-    icon: () => (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    )
-  },
-  { 
-    name: 'Edit Form', 
-    href: '/admin/edit-forms', 
-    icon: () => (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    )
-  },
-  { 
-    name: 'Summary', 
-    href: '/admin/summary', 
-    icon: () => (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    )
-  },
-];
+import Sidebar from './Sidebar';
 
 const Navbar = ({
   title = "Feedback Forms",
   subtitle = "",
-  showMobileMenu = true, // Changed default to true since we want sidebar functionality
+}: {
+  title?: string;
+  subtitle?: string;
 }) => {
   const { data: session, status } = useSession();
-  const pathname = usePathname();
   const isAuthenticated = status === 'authenticated';
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const userInfo = {
     name: session?.user?.name || 'Guest',
     avatar: session?.user?.image || null,
   };
 
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const isAdminRoute = pathname.startsWith('/admin');
 
   return (
     <>
       <header className="bg-gray-800 border-b border-gray-700 px-4 py-4 sm:px-6 lg:px-8 sticky top-0 z-[60]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
-            {/* Menu Button (Hamburger) - Now always visible */}
             <div className="flex items-center space-x-4">
-              <button
-                onClick={toggleMobileMenu}
-                className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
-                title="Menu"
-              >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-
-              {/* Logo and Title */}
+              {isAdminRoute && (
+                <button
+                  onClick={toggleMobileMenu}
+                  className="md:hidden p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+                  title="Menu"
+                >
+                  {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
+              )}
               <Link href="/">
                 <div className="flex items-center space-x-4">
                   <Image
@@ -98,7 +51,6 @@ const Navbar = ({
                     width={100}
                     height={100}
                   />
-                  
                   <div className="hidden sm:block">
                     <h1 className="text-xl font-bold text-white">{title}</h1>
                     <p className="text-gray-400 text-sm">{subtitle}</p>
@@ -106,10 +58,7 @@ const Navbar = ({
                 </div>
               </Link>
             </div>
-
-            {/* User Info & Auth Buttons */}
             <div className="flex items-center space-x-4">
-              {/* Desktop user info */}
               {isAuthenticated && (
                 <div className="hidden md:flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gray-600 rounded-full overflow-hidden flex justify-center items-center">
@@ -122,8 +71,6 @@ const Navbar = ({
                   <span className="text-sm text-gray-300">{userInfo.name}</span>
                 </div>
               )}
-
-              {/* Auth Button */}
               {isAuthenticated ? (
                 <button
                   onClick={() => signOut()}
@@ -144,8 +91,6 @@ const Navbar = ({
               )}
             </div>
           </div>
-
-          {/* Mobile Title */}
           <div className="sm:hidden mt-2">
             <h1 className="text-lg font-bold text-white">{title}</h1>
             <p className="text-gray-400 text-sm">{subtitle}</p>
@@ -153,97 +98,15 @@ const Navbar = ({
         </div>
       </header>
 
-      {/* Sidebar Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={toggleMobileMenu}>
-          <div 
-            className="fixed left-0 top-0 pt-24 h-full w-80 bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Sidebar Header */}
-            <div className="p-6 border-b border-gray-700">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-white">Navigation</h2>
-                <button
-                  onClick={toggleMobileMenu}
-                  className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* User Info Section */}
-            {isAuthenticated && (
-              <div className="p-6 border-b border-gray-700">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-600 rounded-full overflow-hidden flex justify-center items-center">
-                    {userInfo.avatar ? (
-                      <img src={userInfo.avatar} alt="User" className="w-full h-full object-cover" />
-                    ) : (
-                      <User className="w-5 h-5 text-gray-300" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-white font-medium">{userInfo.name}</p>
-                    <p className="text-gray-400 text-sm">User</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Navigation Links */}
-            <nav className="p-4">
-              <div className="space-y-2">
-                {navigation.map((item) => {
-                  const isActive = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={toggleMobileMenu}
-                      className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                        isActive
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                      }`}
-                    >
-                      <item.icon />
-                      <span className="font-medium">{item.name}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-
-              {/* Auth Section in Sidebar */}
-              <div className="mt-6 pt-6 border-t border-gray-700">
-                {isAuthenticated ? (
-                  <button
-                    onClick={() => {
-                      signOut();
-                      toggleMobileMenu();
-                    }}
-                    className="flex items-center space-x-3 px-4 py-3 w-full text-left text-red-400 hover:bg-red-600 hover:text-white rounded-lg transition-colors"
-                  >
-                    <LogOut className="w-5 h-5" />
-                    <span className="font-medium">Logout</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      signIn();
-                      toggleMobileMenu();
-                    }}
-                    className="flex items-center space-x-3 px-4 py-3 w-full text-left text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg transition-colors"
-                  >
-                    <LogIn className="w-5 h-5" />
-                    <span className="font-medium">Login</span>
-                  </button>
-                )}
-              </div>
-            </nav>
-          </div>
-        </div>
+      {/* Mobile Sidebar */}
+      {isMobileMenuOpen && isAdminRoute && (
+        <Sidebar
+          isMobile={true}
+          isAdminRoute={true}
+          userInfo={userInfo}
+          isAuthenticated={isAuthenticated}
+          toggleMobileMenu={toggleMobileMenu}
+        />
       )}
     </>
   );

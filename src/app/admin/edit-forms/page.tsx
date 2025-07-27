@@ -126,7 +126,7 @@ export default function FormList() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-gray-950 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
   <div className="flex items-center gap-4 mb-4">
