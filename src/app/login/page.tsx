@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Mail, Lock, Settings, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -25,30 +25,27 @@ export default function LoginPage() {
         });
 
         if (res?.ok) {
-            router.push('/admin'); // redirect after login
+            await getSession(); // ✅ Fix 1: refresh session manually
+            router.push('/admin');
         } else {
             setError('Invalid email or password');
         }
+
         setIsLoading(false);
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
-            {/* Background Pattern */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[size:24px_24px] opacity-20"></div>
 
             <div className="relative w-full max-w-md">
-                {/* Logo/Brand Section */}
                 <div className="text-center mb-8">
-
                     <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
                     <p className="text-gray-400">Sign in to your admin account</p>
                 </div>
 
-                {/* Login Form */}
                 <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 shadow-2xl">
                     <form onSubmit={handleLogin} className="space-y-6">
-                        {/* Error Message */}
                         {error && (
                             <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
                                 <p className="text-red-400 text-sm flex items-center">
@@ -60,7 +57,6 @@ export default function LoginPage() {
                             </div>
                         )}
 
-                        {/* Email Field */}
                         <div className="space-y-3">
                             <label htmlFor="email" className="text-md font-medium text-gray-300">
                                 Email Address
@@ -81,7 +77,6 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        {/* Password Field */}
                         <div className="space-y-2">
                             <label htmlFor="password" className="text-sm font-medium text-gray-300">
                                 Password
@@ -112,7 +107,7 @@ export default function LoginPage() {
                                 </button>
                             </div>
                         </div>
-                        {/* Submit Button */}
+
                         <button
                             type="submit"
                             disabled={isLoading}
