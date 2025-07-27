@@ -20,7 +20,7 @@ A dynamic, full-stack feedback collection and analysis system built with Next.js
 
 🎨 Modern UI: Built with Shadcn UI, Radix, Tailwind, and Lucide icons.
 
-🛠️ Tech Stack
+🛠️ Tech Stack:
 Area	Tech Used
 Frontend	Next.js 15+, TypeScript, Tailwind CSS, Shadcn UI
 Backend	API Routes, Prisma ORM, PostgreSQL
@@ -29,7 +29,6 @@ AI/LLM	LangChain, ChatGroq (LLaMA model)
 Charts	Recharts, Chart.js
 Toast	Sonner
 Icons	Lucide-react
-
 
 
 🔄 API Overview
