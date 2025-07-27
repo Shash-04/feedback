@@ -7,8 +7,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden">
       {/* Glow Effect */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-purple-500 rounded-full blur-[100px] sm:blur-[120px] opacity-20 pointer-events-none" />
-
+      <div className="absolute  top-0 left-1/2 -translate-x-1/2 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-purple-500 rounded-full blur-[100px] sm:blur-[120px] opacity-20 pointer-events-none" />
       {/* Heading */}
       <motion.h1
         initial={{ opacity: 0, y: -40 }}
@@ -53,7 +52,7 @@ export default function Home() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.8 }}
-        className="mt-20 w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-center"
+        className="mt-20 mb-6 w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-center"
       >
         {[
           {
@@ -74,7 +73,7 @@ export default function Home() {
         ].map((feature, idx) => (
           <div
             key={idx}
-            className="bg-zinc-900/60 border border-zinc-700 rounded-2xl p-6 shadow-lg hover:shadow-purple-700 transition"
+            className="mb-6 bg-zinc-900/60 border border-zinc-700 rounded-2xl p-6 shadow-lg hover:shadow-purple-700 transition"
           >
             <div className="text-4xl mb-4">{feature.icon}</div>
             <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>

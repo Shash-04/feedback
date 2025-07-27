@@ -198,6 +198,7 @@ export default function SummaryPage() {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 delay={0.2}
+                                className='p-2'
                             >
                                 {sentimentData.length > 0 ? (
                                     <ResponsiveContainer width="100%" height="100%">

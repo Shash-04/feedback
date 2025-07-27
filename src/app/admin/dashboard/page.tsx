@@ -87,15 +87,15 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.02 }}
-            className="bg-gray-900 border border-gray-800 p-6 rounded-xl"
+            className="bg-gray-900 border border-gray-800 p-4 sm:p-6 rounded-xl"
         >
             <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-lg ${color}`}>
-                    <Icon className="w-6 h-6 text-white" />
+                <div className={`p-2 sm:p-3 rounded-lg ${color}`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div className="text-right">
-                    <p className="text-2xl font-bold">{value}</p>
-                    <p className="text-sm text-gray-400">{title}</p>
+                    <p className="text-lg sm:text-2xl font-bold">{value}</p>
+                    <p className="text-xs sm:text-sm text-gray-400">{title}</p>
                 </div>
             </div>
             {subtitle && (
@@ -105,21 +105,21 @@ export default function AdminDashboard() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-950 text-white py-10 px-4">
+        <div className="min-h-screen bg-gray-950 text-white py-6 sm:py-10 px-4">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="mb-8 flex items-center justify-between"
+                    className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
                     <div>
-                        <h1 className="text-4xl font-bold mb-1">Admin Dashboard</h1>
-                        <p className="text-gray-400 text-lg">Monitor your feedback forms and analytics</p>
+                        <h1 className="text-2xl sm:text-4xl font-bold mb-1">Admin Dashboard</h1>
+                        <p className="text-gray-400 text-sm sm:text-lg">Monitor your feedback forms and analytics</p>
                     </div>
                     <Link href="/admin/form-builder">
-                        <button className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                        <button className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors w-full sm:w-auto justify-center">
                             <PlusCircle className="w-4 h-4" />
                             New Form
                         </button>
@@ -131,25 +131,25 @@ export default function AdminDashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="mb-8"
+                    className="mb-6 sm:mb-8"
                 >
-                    <div className="flex items-center gap-2 mb-6">
+                    <div className="flex items-center gap-2 mb-4 sm:mb-6">
                         <Activity className="w-5 h-5 text-purple-400" />
-                        <h2 className="text-xl font-semibold">Overview</h2>
+                        <h2 className="text-lg sm:text-xl font-semibold">Overview</h2>
                     </div>
                     
                     {loading ? (
-                        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+                        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                             {Array.from({ length: 6 }).map((_, idx) => (
-                                <div key={idx} className="bg-gray-800/60 border border-gray-700 p-6 rounded-xl animate-pulse">
-                                    <div className="h-12 bg-gray-700 rounded mb-4" />
-                                    <div className="h-6 bg-gray-700 rounded w-3/4 mb-2" />
-                                    <div className="h-4 bg-gray-700 rounded w-1/2" />
+                                <div key={idx} className="bg-gray-800/60 border border-gray-700 p-4 sm:p-6 rounded-xl animate-pulse">
+                                    <div className="h-10 sm:h-12 bg-gray-700 rounded mb-4" />
+                                    <div className="h-5 sm:h-6 bg-gray-700 rounded w-3/4 mb-2" />
+                                    <div className="h-3 sm:h-4 bg-gray-700 rounded w-1/2" />
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="grid gap-3 grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+                        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
                             <StatCard
                                 title="Total Forms"
                                 value={stats.totalForms}
@@ -180,37 +180,37 @@ export default function AdminDashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="mb-8"
+                    className="mb-6 sm:mb-8"
                 >
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
                         <div className="flex items-center gap-2">
                             <AlertCircle className="w-5 h-5 text-purple-400" />
-                            <h2 className="text-xl font-semibold">Quick Actions</h2>
+                            <h2 className="text-lg sm:text-xl font-semibold">Quick Actions</h2>
                         </div>
                     </div>
                     
-                    <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                         <Link href="/admin/summary">
-                            <div className="bg-gray-900 border border-gray-800 p-4 rounded-lg hover:border-purple-500 transition-colors cursor-pointer">
+                            <div className="bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-lg hover:border-purple-500 transition-colors cursor-pointer">
                                 <div className="flex items-center gap-3">
                                     <PieChart className="w-5 h-5 text-purple-400" />
-                                    <span>View Analytics</span>
+                                    <span className="text-sm sm:text-base">View Analytics</span>
                                 </div>
                             </div>
                         </Link>
                         <Link href="/admin/responses">
-                            <div className="bg-gray-900 border border-gray-800 p-4 rounded-lg hover:border-green-500 transition-colors cursor-pointer">
+                            <div className="bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-lg hover:border-green-500 transition-colors cursor-pointer">
                                 <div className="flex items-center gap-3">
                                     <Users className="w-5 h-5 text-green-400" />
-                                    <span>All Responses</span>
+                                    <span className="text-sm sm:text-base">All Responses</span>
                                 </div>
                             </div>
                         </Link>
                         <Link href="/admin">
-                            <div className="bg-gray-900 border border-gray-800 p-4 rounded-lg hover:border-blue-500 transition-colors cursor-pointer">
+                            <div className="bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-lg hover:border-blue-500 transition-colors cursor-pointer">
                                 <div className="flex items-center gap-3">
                                     <Activity className="w-5 h-5 text-blue-400" />
-                                    <span>Admin Panel</span>
+                                    <span className="text-sm sm:text-base">Admin Panel</span>
                                 </div>
                             </div>
                         </Link>
@@ -223,26 +223,26 @@ export default function AdminDashboard() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
                 >
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
                         <div className="flex items-center gap-2">
                             <FileText className="w-5 h-5 text-purple-400" />
-                            <h2 className="text-xl font-semibold">Your Forms</h2>
+                            <h2 className="text-lg sm:text-xl font-semibold">Your Forms</h2>
                         </div>
-                        <Link href="/admin/edit-forms" className="text-purple-400 hover:text-purple-300 text-sm">
+                        <Link href="/admin/edit-forms" className="text-purple-400 hover:text-purple-300 text-xs sm:text-sm">
                             View All
                         </Link>
                     </div>
 
-                    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+                    <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                         {loading ? (
                             Array.from({ length: 3 }).map((_, idx) => (
                                 <div
                                     key={idx}
-                                    className="bg-gray-800/60 border border-gray-700 p-6 rounded-xl animate-pulse"
+                                    className="bg-gray-800/60 border border-gray-700 p-4 sm:p-6 rounded-xl animate-pulse"
                                 >
-                                    <div className="h-6 bg-gray-700 rounded w-3/4 mb-3" />
-                                    <div className="h-4 bg-gray-700 rounded w-full mb-2" />
-                                    <div className="h-4 bg-gray-700 rounded w-2/3" />
+                                    <div className="h-5 sm:h-6 bg-gray-700 rounded w-3/4 mb-3" />
+                                    <div className="h-3 sm:h-4 bg-gray-700 rounded w-full mb-2" />
+                                    <div className="h-3 sm:h-4 bg-gray-700 rounded w-2/3" />
                                 </div>
                             ))
                         ) : error ? (
@@ -250,11 +250,11 @@ export default function AdminDashboard() {
                                 Failed to load dashboard data.
                             </div>
                         ) : forms.length === 0 ? (
-                            <div className="col-span-full text-center text-gray-400 py-12">
-                                <FileText className="w-12 h-12 mx-auto mb-4 text-gray-600" />
-                                <p className="mb-4">No forms available.</p>
+                            <div className="col-span-full text-center text-gray-400 py-8 sm:py-12">
+                                <FileText className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-4 text-gray-600" />
+                                <p className="mb-4 text-sm sm:text-base">No forms available.</p>
                                 <Link href="/admin/form-builder">
-                                    <button className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg">
+                                    <button className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg text-sm sm:text-base">
                                         Create Your First Form
                                     </button>
                                 </Link>
@@ -267,26 +267,26 @@ export default function AdminDashboard() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
                                     whileHover={{ scale: 1.02 }}
-                                    className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow hover:shadow-purple-700/20 hover:border-purple-700 transition-all"
+                                    className="bg-gray-900 border border-gray-800 p-4 sm:p-6 rounded-xl shadow hover:shadow-purple-700/20 hover:border-purple-700 transition-all"
                                 >
                                     <Link href={`/admin/forms/${form.id}`}>
                                         <div className="cursor-pointer">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <FileText className="text-purple-400 w-5 h-5" />
-                                                <h3 className="text-lg font-semibold line-clamp-1">
+                                            <div className="flex items-center gap-3 mb-3 sm:mb-4">
+                                                <FileText className="text-purple-400 w-4 h-4 sm:w-5 sm:h-5" />
+                                                <h3 className="text-base sm:text-lg font-semibold line-clamp-1">
                                                     {form.title}
                                                 </h3>
                                             </div>
-                                            <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+                                            <p className="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4 line-clamp-2">
                                                 {form.description || "No description provided."}
                                             </p>
-                                            <div className="flex justify-between text-xs text-gray-500">
+                                            <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0 text-xs text-gray-500">
                                                 <span className="flex items-center gap-1">
-                                                    <Calendar className="w-4 h-4" />
+                                                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     {formatDate(form.createdAt)}
                                                 </span>
-                                                <span className=" text-white flex items-center gap-1">
-                                                    <PieChart className="w-4 h-4 " />
+                                                <span className="text-white flex items-center gap-1">
+                                                    <PieChart className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     {form.responsesCount || 0} responses
                                                 </span>
                                             </div>
