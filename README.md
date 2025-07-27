@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+📋 Feedback Analysis App
+A dynamic, full-stack feedback collection and analysis system built with Next.js (v15+), TypeScript, Prisma, PostgreSQL, and Tailwind CSS. It supports both admin-managed form creation and student submissions, with AI-powered summaries via LangChain/Groq.
 
-## Getting Started
+🚀 Built for academic use, real-time form management, and intelligent feedback insights.
 
-First, run the development server:
+🌟 Features
+🔐 Auth System: NextAuth with credential-based login and role-based admin protection.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🧠 AI Summaries: Generate structured feedback summaries using LLMs via LangChain + ChatGroq.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+📊 Admin Dashboard: Stats, charts, and response analysis for every form.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+📝 Form Builder & Editor: Create, edit, or delete forms and questions.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🙋‍♂️ Student View: Fill out feedback forms and get real-time feedback submission toasts.
 
-## Learn More
+📈 Charts & Visualizations: Built with Recharts and Chart.js for admin insights.
 
-To learn more about Next.js, take a look at the following resources:
+⚡ Modular API Design: RESTful endpoints with full CRUD support.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🎨 Modern UI: Built with Shadcn UI, Radix, Tailwind, and Lucide icons.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+🛠️ Tech Stack
+Area	Tech Used
+Frontend	Next.js 15+, TypeScript, Tailwind CSS, Shadcn UI
+Backend	API Routes, Prisma ORM, PostgreSQL
+Auth	NextAuth.js (Credentials Provider + Middleware)
+AI/LLM	LangChain, ChatGroq (LLaMA model)
+Charts	Recharts, Chart.js
+Toast	Sonner
+Icons	Lucide-react
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🔄 API Overview
+➕ Forms API
+Endpoint	Description
+POST /api/forms	Create a new feedback form
+GET /api/forms	List all forms
+GET /api/forms/:id	Get a specific form with questions
+DELETE /api/forms/:id	Delete a form
+POST /api/forms/:id/submit	Submit a response
+GET /api/forms/:id/summary	Generate AI-powered summary
+
+📊 Dashboard
+GET /api/dashboard/stats: Returns total forms, responses, avg rating, per-form stats
