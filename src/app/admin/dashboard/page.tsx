@@ -1,9 +1,10 @@
 "use client";
 
-import { Calendar, FileText, PieChart, PlusCircle, Users, TrendingUp, Clock, Star, AlertCircle, Activity } from "lucide-react";
+import { Calendar, FileText, PieChart, PlusCircle, Users, TrendingUp, Clock, Star, AlertCircle, Activity, Eye } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import ResponsesModal from "./ResponsesModal";
 
 interface FeedbackForm {
     id: string;
@@ -30,6 +31,8 @@ export default function AdminDashboard() {
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedForm, setSelectedForm] = useState<{ id: string; title: string } | null>(null);
 
     const fetchDashboardData = async () => {
         try {
@@ -62,6 +65,16 @@ export default function AdminDashboard() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const openResponsesModal = (formId: string, formTitle: string) => {
+        setSelectedForm({ id: formId, title: formTitle });
+        setModalOpen(true);
+    };
+
+    const closeResponsesModal = () => {
+        setModalOpen(false);
+        setSelectedForm(null);
     };
 
     useEffect(() => {
@@ -269,34 +282,69 @@ export default function AdminDashboard() {
                                     whileHover={{ scale: 1.02 }}
                                     className="bg-gray-900 border border-gray-800 p-4 sm:p-6 rounded-xl shadow hover:shadow-purple-700/20 hover:border-purple-700 transition-all"
                                 >
-                                    <Link href={`/admin/forms/${form.id}`}>
-                                        <div className="cursor-pointer">
-                                            <div className="flex items-center gap-3 mb-3 sm:mb-4">
-                                                <FileText className="text-purple-400 w-4 h-4 sm:w-5 sm:h-5" />
-                                                <h3 className="text-base sm:text-lg font-semibold line-clamp-1">
-                                                    {form.title}
-                                                </h3>
+                                    <div className="cursor-pointer">
+                                        <Link href={`/admin/forms/${form.id}`}>
+                                            <div className="mb-4">
+                                                <div className="flex items-center gap-3 mb-3 sm:mb-4">
+                                                    <FileText className="text-purple-400 w-4 h-4 sm:w-5 sm:h-5" />
+                                                    <h3 className="text-base sm:text-lg font-semibold line-clamp-1">
+                                                        {form.title}
+                                                    </h3>
+                                                </div>
+                                                <p className="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4 line-clamp-2">
+                                                    {form.description || "No description provided."}
+                                                </p>
+                                                <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0 text-xs text-gray-500">
+                                                    <span className="flex items-center gap-1">
+                                                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                        {formatDate(form.createdAt)}
+                                                    </span>
+                                                    <span className="text-white flex items-center gap-1">
+                                                        <PieChart className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                        {form.responsesCount || 0} responses
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <p className="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4 line-clamp-2">
-                                                {form.description || "No description provided."}
-                                            </p>
-                                            <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0 text-xs text-gray-500">
-                                                <span className="flex items-center gap-1">
-                                                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
-                                                    {formatDate(form.createdAt)}
-                                                </span>
-                                                <span className="text-white flex items-center gap-1">
-                                                    <PieChart className="w-3 h-3 sm:w-4 sm:h-4" />
-                                                    {form.responsesCount || 0} responses
-                                                </span>
-                                            </div>
+                                        </Link>
+                                        
+                                        {/* View Responses Button */}
+                                        <div className="border-t border-gray-800 pt-3 mt-3">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    openResponsesModal(form.id, form.title);
+                                                }}
+                                                disabled={form.responsesCount === 0}
+                                                className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+                                                    form.responsesCount === 0
+                                                        ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                                                        : 'bg-blue-600 hover:bg-blue-500 text-white'
+                                                }`}
+                                            >
+                                                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                {form.responsesCount === 0 
+                                                    ? 'No Responses' 
+                                                    : 'View Responses'
+                                                }
+                                            </button>
                                         </div>
-                                    </Link>
+                                    </div>
                                 </motion.div>
                             ))
                         )}
                     </div>
                 </motion.div>
+
+                {/* Responses Modal */}
+                {selectedForm && (
+                    <ResponsesModal
+                        isOpen={modalOpen}
+                        onClose={closeResponsesModal}
+                        formId={selectedForm.id}
+                        formTitle={selectedForm.title}
+                    />
+                )}
             </div>
         </div>
     );
