@@ -44,15 +44,28 @@ export async function POST(req: Request) {
   }
 }
 
-// GET: Fetch all forms
+// GET: Fetch all forms with responsesCount
 export async function GET() {
   try {
     const forms = await prisma.feedbackForm.findMany({
-      include: { questions: true },
+      include: {
+        _count: {
+          select: { responses: true }
+        },
+        questions: true
+      },
       orderBy: { createdAt: 'desc' }
     });
 
-    return NextResponse.json(forms, { status: 200 });
+    const formatted = forms.map((form) => ({
+      id: form.id,
+      title: form.title,
+      createdAt: form.createdAt,
+      questions: form.questions,
+      responsesCount: form._count.responses
+    }));
+
+    return NextResponse.json(formatted, { status: 200 });
   } catch (error) {
     console.error("Error fetching forms:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
