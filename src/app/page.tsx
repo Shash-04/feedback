@@ -15,7 +15,7 @@ export default function Home() {
         transition={{ duration: 0.8 }}
         className="mt-7 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-center leading-tight"
       >
-        Feedback<span className="text-purple-500">Analysis</span> Dashboard
+         Feedback<span className="text-purple-500">Analysis</span> Dashboard
       </motion.h1>
 
       {/* Subheading */}
