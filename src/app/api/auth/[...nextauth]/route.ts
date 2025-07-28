@@ -18,8 +18,8 @@ const handler = NextAuth({
                     {
                         id: "1",
                         name: "Admin User",
-                        email: "shash@gmail.com",
-                        password: "shash",
+                        email: "admin@gmail.com",
+                        password: "admin123",
                     },
                     {
                         id: "2",
