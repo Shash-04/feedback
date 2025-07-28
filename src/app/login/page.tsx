@@ -25,11 +25,11 @@ export default function LoginPage() {
         });
 
         if (res?.ok) {
-            await getSession(); // ✅ Fix 1: refresh session manually
-            router.push('/admin');
+            window.location.href = '/admin'; // ✅ Full page reload ensures fresh session
         } else {
             setError('Invalid email or password');
         }
+
 
         setIsLoading(false);
     };
