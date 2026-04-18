@@ -18,17 +18,17 @@ const FormCardSkeleton = ({ delay }: { delay: number }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: delay * 0.1 }}
-    className="bg-gray-800/60 border border-gray-700 rounded-xl p-6 animate-pulse"
+    className="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 backdrop-blur-xl animate-pulse"
   >
-    <div className="flex items-center gap-3 mb-4">
-      <div className="w-6 h-6 bg-gray-700 rounded-full"></div>
-      <div className="h-5 bg-gray-700 rounded w-3/4"></div>
+    <div className="flex items-center justify-between mb-6">
+      <div className="w-12 h-12 bg-zinc-800 rounded-2xl"></div>
     </div>
-    <div className="h-4 bg-gray-700 rounded w-full mb-2"></div>
-    <div className="h-4 bg-gray-700 rounded w-2/3 mb-6"></div>
-    <div className="flex justify-between items-center">
-      <div className="h-4 bg-gray-700 rounded w-24"></div>
-      <div className="h-9 bg-gray-700 rounded-lg w-20"></div>
+    <div className="h-6 bg-zinc-800 rounded-lg w-3/4 mb-3"></div>
+    <div className="h-4 bg-zinc-800 rounded-lg w-full mb-2"></div>
+    <div className="h-4 bg-zinc-800 rounded-lg w-2/3 mb-8"></div>
+    <div className="flex justify-between items-center mt-auto pt-6 border-t border-zinc-800/60 mt-4">
+      <div className="h-4 bg-zinc-800 rounded-lg w-24"></div>
+      <div className="h-10 bg-zinc-800 rounded-xl w-24"></div>
     </div>
   </motion.div>
 );
@@ -39,16 +39,17 @@ const EmptyState = () => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.5 }}
-    className="col-span-full text-center py-12"
+    className="col-span-full text-center py-16"
   >
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 max-w-md mx-auto">
-      <div className="bg-purple-500/10 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-        <FileText className="h-8 w-8 text-purple-400" />
+    <div className="bg-zinc-900/40 border border-zinc-800/60 backdrop-blur-xl rounded-3xl p-10 max-w-md mx-auto relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none"></div>
+      <div className="bg-white/5 p-5 rounded-2xl w-20 h-20 mx-auto mb-6 flex items-center justify-center border border-white/10 shadow-inner">
+        <FileText className="h-8 w-8 text-zinc-400" />
       </div>
-      <h3 className="text-xl font-semibold text-white mb-2">No forms found</h3>
-      <p className="text-gray-400 mb-6">You haven't created any forms yet.</p>
-      <Link href="/admin/forms/form-builder">
-        <Button className="bg-purple-600 hover:bg-purple-500 text-white">
+      <h3 className="text-xl font-bold text-zinc-200 mb-3 tracking-tight">No forms found</h3>
+      <p className="text-zinc-500 font-medium mb-8">You haven't created any forms yet.</p>
+      <Link href="/admin/form-builder">
+        <Button className="bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 hover:border-zinc-500 transition-all font-semibold rounded-2xl shadow-sm mx-auto">
           Create Your First Form
         </Button>
       </Link>
@@ -62,17 +63,18 @@ const ErrorState = ({ onRetry }: { onRetry: () => void }) => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.5 }}
-    className="col-span-full text-center py-12"
+    className="col-span-full text-center py-16"
   >
-    <div className="bg-gray-900 border border-red-800 rounded-xl p-8 max-w-md mx-auto">
-      <div className="bg-red-500/10 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+    <div className="bg-zinc-900/40 border border-red-900/30 backdrop-blur-xl rounded-3xl p-10 max-w-md mx-auto relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent pointer-events-none"></div>
+      <div className="bg-red-500/10 p-5 rounded-2xl w-20 h-20 mx-auto mb-6 flex items-center justify-center border border-red-500/20 shadow-inner">
         <AlertCircle className="h-8 w-8 text-red-400" />
       </div>
-      <h3 className="text-xl font-semibold text-white mb-2">Failed to load forms</h3>
-      <p className="text-gray-400 mb-6">There was an error loading your forms.</p>
+      <h3 className="text-xl font-bold text-zinc-200 mb-3 tracking-tight">Failed to load forms</h3>
+      <p className="text-zinc-500 font-medium mb-8">There was an error loading your forms.</p>
       <Button
         onClick={onRetry}
-        className="bg-red-600 hover:bg-red-500 text-white"
+        className="bg-red-900/40 hover:bg-red-900/60 text-red-200 border border-red-800/50 hover:border-red-700 transition-all font-semibold rounded-2xl mx-auto shadow-sm"
       >
         Try Again
       </Button>
@@ -82,7 +84,7 @@ const ErrorState = ({ onRetry }: { onRetry: () => void }) => (
 
 const Button = ({ children, className, ...props }: any) => (
   <button
-    className={`px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2 ${className}`}
+    className={`px-5 py-2.5 flex items-center gap-2 ${className}`}
     {...props}
   >
     {children}
@@ -113,21 +115,6 @@ export default function FormList() {
       setLoading(false);
     }
   };
-  // const handleDelete = async (formId: string) => {
-  //   try {
-  //     const res = await fetch(`/api/forms/${formId}`, {
-  //       method: 'DELETE',
-  //     });
-  //     if (res.ok) {
-  //       console.log("Form deleted");
-  //       window.location.reload();
-  //     } else {
-  //       console.error("Delete failed");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting form:", error);
-  //   }
-  // };
 
   useEffect(() => {
     fetchForms();
@@ -142,24 +129,20 @@ export default function FormList() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white py-10 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-full bg-transparent text-white pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
+           initial={{ opacity: 0, y: -20 }}
+           animate={{ opacity: 1, y: 0 }}
+           className="mb-12"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-purple-500/10 p-3 rounded-lg">
-              <FileText className="h-6 w-6 text-purple-400" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold mb-1">View Summary</h1>
-              <p className="text-gray-400">Manage and view all your feedback forms summary in one place</p>
-            </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">View Summary</h1>
           </div>
+          <p className="text-zinc-400 text-lg max-w-2xl font-light mb-6">
+             Manage and view all your feedback forms summary in one place
+          </p>
           
           {!loading && !error && forms.length > 0 && (
             <motion.div
@@ -168,10 +151,11 @@ export default function FormList() {
               transition={{ delay: 0.3 }}
               className="flex items-center gap-2 mt-4"
             >
-              <Activity className="w-4 h-4 text-purple-400" />
-              <span className="text-sm text-gray-400 bg-gray-800/50 px-3 py-1 rounded-full border border-gray-700">
-                {forms.length} form{forms.length !== 1 ? 's' : ''} total
-              </span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md">
+                  <span className="text-xs font-bold uppercase tracking-wider text-indigo-300">
+                      {forms.length} form{forms.length !== 1 ? 's' : ''} total
+                  </span>
+              </div>
             </motion.div>
           )}
         </motion.div>
@@ -181,7 +165,7 @@ export default function FormList() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
         >
           {loading ? (
             // Loading skeletons
@@ -202,37 +186,41 @@ export default function FormList() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-                className="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow hover:shadow-purple-700/20 hover:border-purple-700 transition-all h-full flex flex-col"
+                whileHover={{ y: -4 }}
+                className="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 backdrop-blur-xl relative group flex flex-col h-full overflow-hidden shadow-none"
               >
-                {/* Card Header */}
-                <div className="mb-5 flex-grow">
-                  <div className="flex items-center gap-3 mb-4">
-                    <FileText className="text-purple-400 w-5 h-5" />
-                    <h3 className="text-lg font-semibold line-clamp-2">
+                {/* Background hover subtle glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl"></div>
+                
+                {/* Card Header (Icon) */}
+                <div className="flex items-start justify-between mb-6 relative z-10">
+                    <div className="bg-indigo-500/10 p-3.5 rounded-2xl border border-indigo-500/20 group-hover:border-indigo-500/40 transition-colors">
+                        <FileText className="text-indigo-400 w-6 h-6" />
+                    </div>
+                </div>
+
+                <div className="mb-8 flex-grow relative z-10">
+                  <h3 className="text-xl font-bold text-zinc-100 mb-3 line-clamp-2 leading-tight tracking-tight">
                       {form.title}
-                    </h3>
-                  </div>
-                  {form.description && (
-                    <p className="text-sm text-gray-400 leading-relaxed line-clamp-3">
+                  </h3>
+                  <p className="text-sm text-zinc-500 font-medium italic line-clamp-3">
                       {form.description || "No description provided."}
-                    </p>
-                  )}
+                  </p>
                 </div>
 
                 {/* Card Footer */}
-                <div className="flex justify-between items-center pt-4 border-t border-gray-800">
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <Calendar className="h-4 w-4" />
-                    <span>{formatDate(form.createdAt)}</span>
-                  </div>
+                <div className="flex justify-between items-center pt-6 border-t border-zinc-800/60 relative z-10 mt-auto">
+                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                        <Calendar className="h-4 w-4 opacity-70" />
+                        <span>{formatDate(form.createdAt)}</span>
+                    </div>
 
-                  <Link href={`/admin/forms/${form.id}/summary`}>
-                    <Button className="bg-gray-800 hover:bg-gray-700 text-gray-100 border border-gray-700 hover:border-gray-600 flex items-center gap-2 transition-colors">
-                      <Eye className="h-4 w-4" />
-                      <span>View Summary</span>
-                    </Button>
-                  </Link>
+                    <Link href={`/admin/forms/${form.id}/summary`}>
+                        <Button className="bg-transparent hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 transition-all font-semibold rounded-xl text-sm shadow-sm group/btn">
+                            <Eye className="h-4 w-4" />
+                            <span>View Summary</span>
+                        </Button>
+                    </Link>
                 </div>
               </motion.div>
             ))

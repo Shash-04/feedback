@@ -132,12 +132,6 @@ export default function FormList() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
           
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-md shadow-lg">
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span className="text-xs font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent uppercase tracking-widest">
-              Form Management
-            </span>
-          </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">Active Forms</h1>

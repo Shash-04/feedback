@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { PlusCircle, Trash2, Save, FileText, Check, AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
+
 // Define a type for a question
 type Question = {
     id: number;
@@ -21,21 +23,21 @@ const Notification = ({ message, type, visible, onClose }: {
     if (!visible) return null;
 
     return (
-        <div className="fixed top-4 right-4 z-50 b">
-            <div className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-lg border ${
+        <div className="fixed top-4 right-4 z-[100]">
+            <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl backdrop-blur-md border ${
                 type === 'success' 
-                    ? 'bg-gray-800 border-green-600 text-green-400' 
-                    : 'bg-gray-800 border-red-600 text-red-400'
+                    ? 'bg-zinc-900/80 border-green-500/30 text-green-400' 
+                    : 'bg-zinc-900/80 border-red-500/30 text-red-400'
             }`}>
                 {type === 'success' ? (
                     <Check className="h-5 w-5" />
                 ) : (
                     <AlertCircle className="h-5 w-5" />
                 )}
-                <span className="text-white">{message}</span>
+                <span className="text-zinc-100 font-medium">{message}</span>
                 <button 
                     onClick={onClose}
-                    className="ml-2 text-gray-400 hover:text-white"
+                    className="ml-2 text-zinc-400 hover:text-white transition-colors cursor-pointer p-1"
                 >
                     ×
                 </button>
@@ -115,19 +117,24 @@ export default function FormBuilder() {
                 onClose={() => setNotification(prev => ({ ...prev, visible: false }))}
             />
             
-            <div className="min-h-screen bg-gray-950 text-white">
+            <div className="min-h-full bg-transparent text-white pb-16">
                 <div className="max-w-4xl mx-auto px-4 py-8">
+                    
                     {/* Header */}
-                    <div className="mb-8">
+                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
                         <div className="flex items-center gap-3 mb-4">
-                            <FileText className="h-8 w-8 text-blue-400" />
-                            <h1 className="text-3xl font-bold">Form Builder</h1>
+                            <FileText className="h-8 w-8 text-indigo-400" />
+                            <h1 className="text-3xl font-bold tracking-tight">Form Builder</h1>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Form Title */}
-                    <div className="mb-8">
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }} 
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-10 bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 backdrop-blur-xl"
+                    >
+                        <label className="block text-sm font-semibold text-zinc-300 mb-3 uppercase tracking-wide">
                             Form Title
                         </label>
                         <input
@@ -135,98 +142,112 @@ export default function FormBuilder() {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Enter form title"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-5 py-4 bg-zinc-950/50 border border-zinc-800/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-lg transition-all text-white placeholder-zinc-500"
                         />
-                    </div>
+                    </motion.div>
 
                     {/* Questions */}
-                    <div className="mb-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-semibold">Questions</h2>
+                    <div className="mb-10">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 px-2 gap-4">
+                            <h2 className="text-2xl font-bold tracking-tight text-white">Questions</h2>
                             {questions.length > 0 && (
-                                <span className="text-sm text-gray-400">
+                                <span className="text-xs font-bold uppercase tracking-wider text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-xl">
                                     {questions.length} question{questions.length !== 1 ? 's' : ''}
                                 </span>
                             )}
                         </div>
 
                         {questions.length === 0 ? (
-                            <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
-                                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-300 mb-2">No questions yet</h3>
-                                <p className="text-gray-400">Add your first question to get started</p>
-                            </div>
+                            <motion.div 
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                className="text-center py-16 bg-zinc-900/40 rounded-3xl border border-zinc-800/60 backdrop-blur-xl relative overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none"></div>
+                                <div className="bg-white/5 p-5 rounded-2xl w-20 h-20 mx-auto mb-6 flex items-center justify-center border border-white/10 shadow-inner">
+                                    <FileText className="h-8 w-8 text-zinc-400" />
+                                </div>
+                                <h3 className="text-xl font-bold text-zinc-200 mb-2 tracking-tight">No questions yet</h3>
+                                <p className="text-zinc-500 font-medium">Add your first question to get started</p>
+                            </motion.div>
                         ) : (
-                            <div className="space-y-4">
+                            <div className="space-y-6">
                                 {questions.map((q, index) => (
-                                    <div
+                                    <motion.div
                                         key={q.id}
-                                        className="bg-gray-800 border border-gray-700 rounded-lg p-6"
+                                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                                        className="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-6 sm:p-8 backdrop-blur-xl relative group"
                                     >
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl"></div>
+                                        
                                         {/* Question Header */}
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-lg font-medium">Question {index + 1}</h3>
+                                        <div className="flex items-center justify-between mb-6 relative z-10">
+                                            <h3 className="text-lg font-bold text-zinc-100">Question {index + 1}</h3>
                                             <button
                                                 onClick={() => removeQuestion(q.id)}
-                                                className="text-red-400 hover:text-red-300 p-1"
+                                                className="text-zinc-500 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20 border border-transparent p-2.5 rounded-xl transition-all duration-300"
+                                                title="Delete Node"
                                             >
                                                 <Trash2 className="h-5 w-5" />
                                             </button>
                                         </div>
 
                                         {/* Question Input */}
-                                        <div className="mb-4">
+                                        <div className="mb-6 relative z-10">
                                             <input
                                                 type="text"
                                                 placeholder="Enter your question"
                                                 value={q.question}
                                                 onChange={(e) => updateQuestion(q.id, "question", e.target.value)}
-                                                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                className="w-full px-5 py-4 bg-zinc-950/50 border border-zinc-800/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-zinc-100 placeholder-zinc-500"
                                             />
                                         </div>
 
                                         {/* Question Settings */}
-                                        <div className="flex flex-col sm:flex-row gap-4">
+                                        <div className="flex flex-col sm:flex-row gap-6 relative z-10">
                                             <div className="flex-1">
-                                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                                <label className="block text-xs font-semibold uppercase tracking-wide text-zinc-400 mb-2">
                                                     Question Type
                                                 </label>
                                                 <select
                                                     value={q.type}
                                                     onChange={(e) => updateQuestion(q.id, "type", e.target.value)}
-                                                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    className="w-full px-4 py-3.5 bg-zinc-950/50 border border-zinc-800/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-zinc-300 appearance-none cursor-pointer"
                                                 >
                                                     {questionTypes.map((type) => (
-                                                        <option key={type.value} value={type.value}>
+                                                        <option key={type.value} value={type.value} className="bg-zinc-900">
                                                             {type.label}
                                                         </option>
                                                     ))}
                                                 </select>
                                             </div>
 
-                                            <div className="flex items-end">
-                                                <label className="flex items-center gap-2 cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={q.required}
-                                                        onChange={(e) => updateQuestion(q.id, "required", e.target.checked)}
-                                                        className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
-                                                    />
-                                                    <span className="text-sm text-gray-300">Required</span>
+                                            <div className="flex items-center pt-2 sm:pt-6">
+                                                <label className="flex items-center gap-3 cursor-pointer group/check">
+                                                    <div className="relative flex items-center justify-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={q.required}
+                                                            onChange={(e) => updateQuestion(q.id, "required", e.target.checked)}
+                                                            className="peer sr-only"
+                                                        />
+                                                        <div className="w-6 h-6 bg-zinc-800 border border-zinc-600 rounded-md peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-all shadow-inner"></div>
+                                                        <Check className="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+                                                    </div>
+                                                    <span className="text-sm font-medium text-zinc-300 group-hover/check:text-white transition-colors">Required</span>
                                                 </label>
                                             </div>
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 ))}
                             </div>
                         )}
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-zinc-800/60">
                         <button
                             onClick={addQuestion}
-                            className="flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                            className="flex items-center justify-center gap-2 px-8 py-4 bg-zinc-800 text-zinc-200 rounded-2xl hover:bg-zinc-700 hover:text-white transition-all font-semibold tracking-wide border border-zinc-700 hover:border-zinc-500 shadow-sm"
                         >
                             <PlusCircle className="h-5 w-5" />
                             Add Question
@@ -235,12 +256,12 @@ export default function FormBuilder() {
                         <button
                             onClick={handleSubmit}
                             disabled={!title.trim() || questions.length === 0}
-                            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+                            className="flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-500 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:border-zinc-800 disabled:cursor-not-allowed transition-all font-semibold tracking-wide shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.5)] border border-indigo-500/50 disabled:shadow-none"
                         >
                             <Save className="h-5 w-5" />
                             Save Form
                         </button>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </>
