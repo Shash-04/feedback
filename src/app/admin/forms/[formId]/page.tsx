@@ -36,17 +36,17 @@ export default function EditFormPage() {
 
   if (loading) {
     return (
-      <div className="bg-gray-950 min-h-screen px-4 py-10 md:px-8">
+      <div className="bg-transparent min-h-full px-4 py-10 md:px-8">
         <div className="max-w-4xl mx-auto space-y-6">
-          <Skeleton className="h-10 w-48 bg-gray-800 rounded-lg" />
+          <Skeleton className="h-10 w-48 bg-zinc-800 rounded-xl" />
           <div className="space-y-4">
-            <Skeleton className="h-16 w-full bg-gray-800 rounded-lg" />
-            <Skeleton className="h-32 w-full bg-gray-800 rounded-lg" />
-            <Skeleton className="h-32 w-full bg-gray-800 rounded-lg" />
+            <Skeleton className="h-16 w-full bg-zinc-800 rounded-2xl" />
+            <Skeleton className="h-32 w-full bg-zinc-800 rounded-2xl" />
+            <Skeleton className="h-32 w-full bg-zinc-800 rounded-2xl" />
           </div>
           <div className="flex flex-wrap gap-3 pt-2">
-            <Skeleton className="h-10 w-36 bg-gray-800 rounded-lg" />
-            <Skeleton className="h-10 w-28 bg-gray-800 rounded-lg" />
+            <Skeleton className="h-10 w-36 bg-zinc-800 rounded-xl" />
+            <Skeleton className="h-10 w-28 bg-zinc-800 rounded-xl" />
           </div>
         </div>
       </div>
@@ -58,23 +58,25 @@ export default function EditFormPage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex items-center justify-center bg-gray-950 min-h-screen px-4"
+        className="flex items-center justify-center bg-transparent min-h-[60vh] px-4"
       >
-        <div className="text-center p-6 max-w-md mx-auto">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-12 w-12 mx-auto text-red-500 mb-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-          <h3 className="text-xl font-semibold text-white mb-2">Form not found</h3>
-          <p className="text-gray-400">
+        <div className="text-center p-8 bg-zinc-900/40 border border-red-900/30 backdrop-blur-xl rounded-3xl max-w-md mx-auto shadow-none">
+          <div className="bg-red-500/10 p-4 rounded-xl w-16 h-16 mx-auto mb-4 border border-red-500/20 flex items-center justify-center">
+             <svg
+               xmlns="http://www.w3.org/2000/svg"
+               className="h-8 w-8 text-red-500"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+               strokeWidth="2"
+             >
+               <circle cx="12" cy="12" r="10" />
+               <line x1="12" y1="8" x2="12" y2="12" />
+               <line x1="12" y1="16" x2="12.01" y2="16" />
+             </svg>
+          </div>
+          <h3 className="text-xl font-bold text-zinc-100 mb-2">Form not found</h3>
+          <p className="text-zinc-500 font-medium">
             The form you're looking for doesn't exist or may have been removed.
           </p>
         </div>
@@ -83,7 +85,7 @@ export default function EditFormPage() {
   }
 
   return (
-    <div className="bg-gray-950 min-h-screen py-8 px-4 md:px-10">
+    <div className="bg-transparent min-h-full py-8 px-4 md:px-10">
       <FormEditor initialData={formData} />
     </div>
   );

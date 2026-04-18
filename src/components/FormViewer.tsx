@@ -125,54 +125,58 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
   if (loading)
     return (
       <div className="flex justify-center items-center min-h-[60vh] bg-background">
-        <Loader className="h-8 w-8 text-muted-foreground animate-spin" />
+        <Loader className="h-8 w-8 text-zinc-500 animate-spin" />
       </div>
     );
 
   if (!form)
     return (
-      <div className="text-center py-20 px-4">
-        <div className="bg-muted border border-border rounded-xl p-8 max-w-md mx-auto shadow-sm">
-          <div className="bg-red-500/10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <AlertCircle className="h-8 w-8 text-red-400" />
+      <div className="text-center py-20 px-4 min-h-screen bg-[#030303] flex items-center justify-center">
+        <div className="bg-zinc-900/40 border border-red-900/30 backdrop-blur-xl rounded-3xl p-10 max-w-md mx-auto shadow-none">
+          <div className="bg-red-500/10 p-4 rounded-2xl w-16 h-16 mx-auto mb-6 flex items-center justify-center border border-red-500/20">
+            <AlertCircle className="h-8 w-8 text-red-500" />
           </div>
-          <h3 className="text-xl font-semibold text-foreground mb-2">
+          <h3 className="text-xl font-bold text-zinc-100 mb-3 tracking-tight">
             Form not found
           </h3>
-          <p className="text-muted-foreground">
-            The requested form could not be loaded.
+          <p className="text-zinc-500 font-medium">
+            The requested form could not be loaded or doesn't exist.
           </p>
         </div>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 py-12 px-4 sm:px-6">
-      <div className="max-w-2xl mx-auto bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+    <div className="min-h-screen bg-[#030303] py-12 px-4 sm:px-6 relative overflow-hidden">
+      {/* Background aesthetic enhancements for the student facing view */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-900/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-900/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-3xl mx-auto bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-8 sm:p-12 shadow-2xl backdrop-blur-xl relative z-10">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-start gap-4 mb-3">
-            <div className="bg-blue-500/10 p-3 rounded-xl">
-              <FileText className="h-6 w-6 text-blue-400" />
+        <div className="mb-10">
+          <div className="flex items-center gap-5 mb-6 relative z-10">
+            <div className="bg-indigo-500/10 p-3.5 rounded-2xl border border-indigo-500/20">
+              <FileText className="h-7 w-7 text-indigo-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">{form.title}</h1>
-              {form.description && (
-                <p className="text-gray-400 mt-1">{form.description}</p>
-              )}
+              <h1 className="text-3xl font-extrabold text-white tracking-tight">{form.title}</h1>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-4" />
+          {form.description && (
+             <p className="text-zinc-400 mt-2 font-medium leading-relaxed">{form.description}</p>
+          )}
+          <div className="border-t border-zinc-800/60 pt-6 mt-8" />
         </div>
 
         {/* Questions */}
-        <div className="space-y-8">
+        <div className="space-y-10">
           {form.questions.map((q, index) => (
-            <div key={q.id} className="space-y-2">
-              <label className="block font-medium text-gray-200">
-                <span className="text-blue-400">{index + 1}.</span>{" "}
+            <div key={q.id} className="space-y-4">
+              <label className="block font-semibold text-zinc-200 text-lg">
+                <span className="text-indigo-400 mr-2">{index + 1}.</span>{" "}
                 {q.question}
-                {q.required && <span className="text-red-500 ml-1">*</span>}
+                {q.required && <span className="text-red-500 ml-1.5">*</span>}
               </label>
 
               {q.type === "DESCRIPTIVE" && (
@@ -180,9 +184,9 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
                   value={answers[q.id] || ""}
                   onChange={(e) => handleChange(q.id, e.target.value)}
                   placeholder="Type your answer here..."
-                  className={`min-h-[120px] bg-gray-800 border ${
-                    errors[q.id] ? "border-red-500" : "border-gray-700"
-                  } text-gray-100 placeholder:text-gray-500 focus-visible:ring-2 focus-visible:ring-blue-500`}
+                  className={`min-h-[140px] bg-zinc-900/60 border ${
+                    errors[q.id] ? "border-red-500 border-2" : "border-zinc-700/80"
+                  } text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-2 focus-visible:ring-indigo-500/50 rounded-2xl p-5 text-base transition-all shadow-inner resize-y`}
                 />
               )}
 
@@ -192,20 +196,20 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
                   onValueChange={(val) => handleChange(q.id, val)}
                 >
                   <SelectTrigger
-                    className={`h-12 bg-gray-800 text-gray-100 ${
+                    className={`h-14 bg-zinc-900/60 text-zinc-100 ${
                       errors[q.id]
-                        ? "border-red-500"
-                        : "border border-gray-700"
-                    } focus:ring-2 focus:ring-blue-500`}
+                        ? "border-red-500 border-2"
+                        : "border border-zinc-700/80"
+                    } focus:ring-2 focus:ring-indigo-500/50 rounded-2xl px-5 text-base transition-all shadow-inner`}
                   >
                     <SelectValue placeholder="Select a rating (1-5)" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 text-gray-100 border-gray-700">
+                  <SelectContent className="bg-zinc-900 text-zinc-100 border-zinc-800/80 rounded-2xl overflow-hidden shadow-2xl">
                     {[1, 2, 3, 4, 5].map((num) => (
                       <SelectItem
                         key={num}
                         value={String(num)}
-                        className="hover:bg-gray-700 focus:bg-gray-700"
+                        className="hover:bg-zinc-800 focus:bg-zinc-800 focus:text-white cursor-pointer py-3 rounded-xl m-1 transition-colors"
                       >
                         {num}
                       </SelectItem>
@@ -215,7 +219,7 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
               )}
 
               {errors[q.id] && (
-                <p className="text-sm text-red-500 font-medium">
+                <p className="text-sm text-red-400 font-bold ml-1 tracking-wide">
                   {errors[q.id]}
                 </p>
               )}
@@ -224,15 +228,15 @@ export const FormViewer: React.FC<Props> = ({ formId }) => {
         </div>
 
         {/* Submit */}
-        <div className="mt-10">
+        <div className="mt-12 pt-8 border-t border-zinc-800/60">
           <Button
             onClick={handleSubmit}
             disabled={submitting}
-            className="w-full h-12 bg-blue-600 hover:bg-blue-500 text-white text-lg font-semibold rounded-xl transition-all"
+            className="w-full h-14 bg-indigo-600 hover:bg-indigo-500 text-white text-lg font-bold rounded-2xl transition-all shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.5)] border border-indigo-500/50 tracking-wide"
           >
             {submitting ? (
-              <div className="flex items-center gap-2">
-                <Loader className="h-5 w-5 animate-spin" />
+              <div className="flex items-center justify-center gap-3">
+                <Loader className="h-6 w-6 animate-spin text-indigo-200" />
                 <span>Submitting...</span>
               </div>
             ) : (
