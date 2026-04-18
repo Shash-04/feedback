@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, FileText, AlertCircle, Edit, Delete, PlusCircle, Trash2 } from "lucide-react";
+import { Calendar, FileText, AlertCircle, Edit, PlusCircle, Trash2, Sparkles, Database } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion"; 
@@ -14,7 +14,7 @@ interface FeedbackForm {
 
 const Button = ({ children, className, ...props }: any) => (
   <button
-    className={`px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2 ${className}`}
+    className={`px-4 py-2 rounded-xl transition-all duration-300 flex items-center gap-2 font-semibold tracking-wide text-sm ${className}`}
     {...props}
   >
     {children}
@@ -26,17 +26,18 @@ const FormCardSkeleton = ({ delay }: { delay: number }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: delay * 0.1 }}
-    className="bg-gray-900/70 border border-gray-800 rounded-xl p-6 backdrop-blur-sm"
+    className="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-7 backdrop-blur-xl animate-pulse flex flex-col h-full"
   >
-    <div className="flex items-center gap-3 mb-4">
-      <div className="w-6 h-6 bg-gray-800 rounded-full"></div>
-      <div className="h-5 bg-gray-800 rounded-full w-3/4"></div>
+    <div className="flex items-center justify-between gap-4 mb-5">
+      <div className="w-12 h-12 bg-zinc-800 rounded-2xl flex-shrink-0"></div>
+      <div className="w-10 h-10 bg-zinc-800/50 rounded-xl"></div>
     </div>
-    <div className="h-4 bg-gray-800 rounded-full w-full mb-2"></div>
-    <div className="h-4 bg-gray-800 rounded-full w-2/3 mb-6"></div>
-    <div className="flex justify-between items-center">
-      <div className="h-4 bg-gray-800 rounded-full w-24"></div>
-      <div className="h-9 bg-gray-800 rounded-lg w-20"></div>
+    <div className="h-5 bg-zinc-800 rounded-full w-3/4 mb-4"></div>
+    <div className="h-4 bg-zinc-800 rounded-full w-full mb-2"></div>
+    <div className="h-4 bg-zinc-800 rounded-full w-2/3 mb-8"></div>
+    <div className="flex justify-between items-center pt-5 border-t border-zinc-800/60 mt-auto">
+      <div className="h-4 bg-zinc-800 rounded-full w-24"></div>
+      <div className="h-10 bg-zinc-800 rounded-xl w-24"></div>
     </div>
   </motion.div>
 );
@@ -46,17 +47,18 @@ const EmptyState = () => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.5 }}
-    className="col-span-full text-center py-12"
+    className="col-span-full text-center py-16"
   >
-    <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-8 max-w-md mx-auto backdrop-blur-sm">
-      <div className="bg-blue-500/10 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-        <FileText className="h-8 w-8 text-blue-400" />
+    <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-10 max-w-lg mx-auto backdrop-blur-xl relative overflow-hidden shadow-2xl">
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none"></div>
+      <div className="bg-indigo-500/10 p-5 rounded-2xl w-20 h-20 mx-auto mb-6 flex items-center justify-center border border-indigo-500/20 shadow-inner">
+        <Database className="h-8 w-8 text-indigo-400" />
       </div>
-      <h3 className="text-xl font-semibold text-gray-100 mb-2">No forms found</h3>
-      <p className="text-gray-400 mb-6">You haven't created any forms yet.</p>
+      <h3 className="text-2xl font-bold text-zinc-100 mb-3 tracking-tight">No Modules Found</h3>
+      <p className="text-zinc-400 mb-8 leading-relaxed">Your ecosystem is a blank canvas. Establish your first intelligent form architecture to begin collecting data.</p>
       <Link href="/admin/form-builder">
-        <Button className="bg-blue-600 hover:bg-blue-500 text-white">
-          Create Your First Form
+        <Button className="bg-indigo-600 hover:bg-indigo-500 text-white w-full justify-center shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.5)]">
+          <PlusCircle className="w-5 h-5" /> Initialize First Form
         </Button>
       </Link>
     </div>
@@ -68,19 +70,19 @@ const ErrorState = ({ onRetry }: { onRetry: () => void }) => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.5 }}
-    className="col-span-full text-center py-12"
+    className="col-span-full text-center py-16"
   >
-    <div className="bg-gray-900/70 border border-red-800 rounded-xl p-8 max-w-md mx-auto backdrop-blur-sm">
-      <div className="bg-red-500/10 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+    <div className="bg-zinc-900/40 border border-red-900/30 rounded-3xl p-10 max-w-lg mx-auto backdrop-blur-xl shadow-2xl">
+      <div className="bg-red-500/10 p-5 rounded-2xl w-20 h-20 mx-auto mb-6 flex items-center justify-center border border-red-500/20 shadow-inner">
         <AlertCircle className="h-8 w-8 text-red-400" />
       </div>
-      <h3 className="text-xl font-semibold text-gray-100 mb-2">Failed to load forms</h3>
-      <p className="text-gray-400 mb-6">There was an error loading your forms.</p>
+      <h3 className="text-2xl font-bold text-zinc-100 mb-3 tracking-tight">System Disruption</h3>
+      <p className="text-zinc-400 mb-8 leading-relaxed">Our connection to the core ecosystem encountered an anomaly.</p>
       <Button
         onClick={onRetry}
-        className="bg-red-600 hover:bg-red-500 text-white"
+        className="bg-red-600/90 hover:bg-red-500 text-white w-full justify-center shadow-lg"
       >
-        Try Again
+        Re-establish Connection
       </Button>
     </div>
   </motion.div>
@@ -126,41 +128,43 @@ export default function FormList() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div className="min-h-full bg-transparent text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
-  <div className="flex items-center gap-4 mb-4">
-    <div className="bg-purple-500/10 p-2 rounded-lg">
-      <FileText className="h-8 w-8 text-purple-400" />
-    </div>
-    <h1 className="text-3xl font-bold text-white">Edit Forms</h1>
+          
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-md shadow-lg">
+            <Sparkles className="w-4 h-4 text-purple-400" />
+            <span className="text-xs font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent uppercase tracking-widest">
+              Form Management
+            </span>
+          </div>
 
-    {/* Pushes this to the end */}
-    <div className="ml-auto">
-      <Link href="/admin/form-builder">
-        <Button className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2">
-          <PlusCircle className="h-5 w-5" /> New Form
-        </Button>
-      </Link>
-    </div>
-  </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">Active Forms</h1>
+            
+            <div className="sm:ml-auto">
+              <Link href="/admin/form-builder">
+                <Button className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.5)]">
+                  <PlusCircle className="h-5 w-5" /> Initialize New
+                </Button>
+              </Link>
+            </div>
+          </div>
 
-  <p className="text-gray-400 max-w-2xl">
-    Manage and edit all your feedback forms in one place
-  </p>
+          <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+            <p className="text-zinc-400 text-lg max-w-2xl font-light">
+              Configure and update your active form architectures from the central repository.
+            </p>
 
-  <div className="mt-6 flex items-center gap-4">
-    {!loading && !error && forms.length > 0 && (
-      <span className="text-sm text-gray-400 bg-gray-800/50 px-3 py-1 rounded-full">
-        {forms.length} form{forms.length !== 1 ? 's' : ''} total
-      </span>
-    )}
-  </div>
-</motion.div>
+            {!loading && !error && forms.length > 0 && (
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-xl">
+                {forms.length} Record{forms.length !== 1 ? 's' : ''} Synced
+              </span>
+            )}
+          </div>
+        </motion.div>
 
-
-
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
           {loading ? (
             Array.from({ length: 6 }).map((_, index) => (
               <FormCardSkeleton key={index} delay={index} />
@@ -176,41 +180,49 @@ export default function FormList() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
+                className="group relative bg-zinc-900/40 border border-zinc-800/60 rounded-3xl p-7 hover:bg-zinc-800/60 transition-all duration-500 backdrop-blur-xl h-full flex flex-col overflow-hidden"
               >
-                <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-6 hover:border-purple-500 transition-all duration-300 hover:shadow-lg backdrop-blur-sm h-full flex flex-col relative">
-                  <button
-                    onClick={() => handleDelete(form.id)}
-                    className="absolute top-3 right-3 bg-red-600 hover:bg-red-500 p-2 rounded-full"
-                  >
-                    <Trash2 className="h-4 w-4 text-white" />
-                  </button>
-                  <div className="mb-5 flex-grow">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="bg-purple-500/10 p-2 rounded-lg flex-shrink-0">
-                        <FileText className="h-5 w-5 text-purple-400" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-white line-clamp-2">
-                        {form.title}
-                      </h3>
+                {/* Subtle Hover Gradient Inside Card */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+                <div className="mb-6 flex-grow relative z-10">
+                  <div className="flex items-start justify-between gap-4 mb-5">
+                    <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/10 p-3.5 rounded-2xl flex-shrink-0 border border-purple-500/20 shadow-inner">
+                      <FileText className="h-6 w-6 text-purple-400" />
                     </div>
-                    {form.description && (
-                      <p className="text-gray-400 text-sm leading-relaxed line-clamp-3">
-                        {form.description}
-                      </p>
-                    )}
+                    
+                    {/* Delete button cleanly positioned top right horizontally inline with the Icon */}
+                    <button
+                      onClick={() => handleDelete(form.id)}
+                      className="text-zinc-500 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20 border border-transparent p-2.5 rounded-xl transition-all duration-300"
+                      title="Delete Form"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
                   </div>
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-800">
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <Calendar className="h-4 w-4" />
-                      <span>{formatDate(form.createdAt)}</span>
-                    </div>
-                    <Link href={`/admin/forms/${form.id}`}>
-                      <Button className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 hover:border-gray-600">
-                        <Edit className="h-4 w-4" /> Edit
-                      </Button>
-                    </Link>
+                  
+                  <h3 className="text-xl font-bold text-zinc-100 mb-3 tracking-tight line-clamp-2">
+                    {form.title}
+                  </h3>
+                  {form.description ? (
+                    <p className="text-zinc-400 text-sm leading-relaxed font-medium line-clamp-3">
+                      {form.description}
+                    </p>
+                  ) : (
+                    <p className="text-zinc-600 text-sm italic font-medium">No description provided</p>
+                  )}
+                </div>
+                
+                <div className="flex justify-between items-center pt-5 border-t border-zinc-800/60 relative z-10 mt-auto">
+                  <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 tracking-wide uppercase">
+                    <Calendar className="h-4 w-4" />
+                    <span>{formatDate(form.createdAt)}</span>
                   </div>
+                  <Link href={`/admin/forms/${form.id}`}>
+                    <Button className="bg-zinc-800/50 border border-zinc-700/50 text-zinc-300 hover:bg-zinc-700 hover:text-white hover:border-zinc-500 transition-all shadow-sm">
+                      <Edit className="h-4 w-4" /> Edit
+                    </Button>
+                  </Link>
                 </div>
               </motion.div>
             ))
