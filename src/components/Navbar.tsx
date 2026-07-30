@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useSession, signIn, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { User, LogOut, LogIn, Menu, X } from 'lucide-react';
+import { LayoutDashboard, PenLine, Menu, X } from 'lucide-react';
 import Sidebar from './Sidebar';
 
 const Navbar = ({
@@ -14,18 +13,17 @@ const Navbar = ({
   title?: string;
   subtitle?: string;
 }) => {
-  const { data: session, status } = useSession();
-  const isAuthenticated = status === 'authenticated';
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-  const userInfo = {
-    name: session?.user?.name || 'Guest',
-    avatar: session?.user?.image || null,
-  };
 
-  const isAdminRoute = pathname.startsWith('/admin');
+  const isAdminRoute = pathname?.startsWith('/admin') ?? false;
+
+  const navLinks = [
+    { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+    { name: 'Submit Feedback', href: '/student', icon: PenLine },
+  ];
 
   return (
     <>
@@ -57,45 +55,29 @@ const Navbar = ({
                 </div>
               </Link>
             </div>
-            <div className="flex items-center space-x-4">
-              {isAuthenticated && (
-                <div className="hidden md:flex items-center space-x-3 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full backdrop-blur-md">
-                  <div className="w-7 h-7 bg-zinc-800 rounded-full overflow-hidden flex justify-center items-center">
-                    {userInfo.avatar ? (
-                      <img
-                        src={userInfo.avatar}
-                        alt="User"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <User className="w-4 h-4 text-zinc-400" />
-                    )}
-                  </div>
-                  <span className="text-sm font-medium text-zinc-200 pr-2">
-                    {userInfo.name}
-                  </span>
-                </div>
-              )}
-              {isAuthenticated ? (
-                <button
-                  onClick={() => signOut()}
-                  className="p-2 flex items-center gap-1.5 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all px-3"
-                  title="Logout"
-                >
-                  <span className="hidden sm:inline text-sm font-medium">Logout</span>
-                  <LogOut className="w-4 h-4" />
-                </button>
-              ) : (
-                <button
-                  onClick={() => signIn()}
-                  className="p-2 flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-full transition-all px-5 shadow-[0_0_15px_rgba(79,70,229,0.4)] hover:shadow-[0_0_20px_rgba(79,70,229,0.6)]"
-                  title="Login"
-                >
-                  <span className="text-sm font-semibold">Login</span>
-                  <LogIn className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+            <nav className="flex items-center gap-2">
+              {navLinks.map((link) => {
+                const isActive =
+                  pathname === link.href ||
+                  (link.href !== '/' && (pathname?.startsWith(link.href) ?? false));
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    title={link.name}
+                    className={`flex items-center gap-2 rounded-full px-3 sm:px-5 py-2 text-sm font-semibold transition-all border ${
+                      isActive
+                        ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300 shadow-[0_0_15px_rgba(79,70,229,0.35)]'
+                        : 'border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white hover:border-white/20'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="hidden sm:inline">{link.name}</span>
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
           {subtitle && (
             <div className="sm:hidden mt-2 pb-1">
@@ -110,8 +92,6 @@ const Navbar = ({
         <Sidebar
           isMobile={true}
           isAdminRoute={true}
-          userInfo={userInfo}
-          isAuthenticated={isAuthenticated}
           toggleMobileMenu={toggleMobileMenu}
         />
       )}

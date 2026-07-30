@@ -22,11 +22,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         isMobile={false}
                         isAdminRoute={true}
                         toggleMobileMenu={() => {}}
-                        userInfo={{
-                            name: '',
-                            avatar: null
-                        }} 
-                        isAuthenticated={false}
                     />
                 </div>
 
